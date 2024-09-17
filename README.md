@@ -1,4 +1,4 @@
-# devhive
+# devhive (Stage 1 production of Devhive Messaging + Posting compatible)
 ## Problem Statement
 Developers often face challenges in finding collaborators for their projects, sharing their
 work, and seeking advice or feedback from the community. Existing platforms may not
