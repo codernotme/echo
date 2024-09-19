@@ -1,7 +1,7 @@
 export default {
     providers: [
       {
-        domain: "https://obliging-sparrow-79.clerk.accounts.dev",
+        domain: "https://current-pangolin-13.clerk.accounts.dev",
         applicationID: "convex",
       },
     ]

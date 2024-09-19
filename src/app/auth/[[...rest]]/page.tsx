@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@nextui-org/button";
 import { Code, Terminal, Share2, Users, ChevronRight } from "lucide-react";
 import { gsap } from "gsap";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import AuthCard from "./card";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/modal"; // Adjust imports as per your modal component
 
 export default function LandingPage() {
-  const [email, setEmail] = useState("");
   const [scrolled, setScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(true); // State to control modal visibility
 
   // Refs for GSAP animations
   const heroRef = useRef(null);
@@ -53,10 +54,50 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close modal function
+  const onClose = () => setIsOpen(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black text-gray-200 font-sans">
-      {/* Header */}
-      <header
+      {/* Modal */}
+      <Modal isOpen={isOpen} onOpenChange={setIsOpen} className="bg-gray-700 p-4">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-3">
+                Security Notice
+              </ModalHeader>
+              <ModalBody>
+                <p className="text-md text-red-700">
+                  *We take login credentials for the website, but don&apos;t worry, everything is safe and won&apos;t be used to do any harm or cause privacy leaks.*
+                </p>
+                <p>
+                  Here is a video demo on how this site works
+                </p>
+                <video
+                  width="100%"
+                  height="auto"
+                  controls
+                  className="mt-4 rounded-lg"
+                >
+                  <source src="/path-to-video.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" radius="md" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      
+
+{/* Header */}
+<header
         ref={headerRef}
         className={`fixed w-full transition-all duration-300 z-10 ${
           scrolled ? "bg-opacity-80 shadow-lg" : "bg-transparent"
@@ -65,7 +106,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 flex justify-between items-center py-4">
           <Link href="/" className="flex items-center space-x-2">
             <Code className="h-8 w-8 text-pink-500" />
-            <span className="text-2xl font-medium text-gray-200">devhive</span>
+            <span className="text-2xl font-medium text-gray-200">devhive-α</span>
           </Link>
         </div>
       </header>

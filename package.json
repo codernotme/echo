@@ -22,6 +22,7 @@
     "@nextui-org/image": "^2.0.31",
     "@nextui-org/input": "^2.2.4",
     "@nextui-org/link": "^2.0.35",
+    "@nextui-org/modal": "^2.0.41",
     "@nextui-org/navbar": "^2.0.36",
     "@nextui-org/user": "^2.0.33",
     "@radix-ui/react-alert-dialog": "^1.1.1",

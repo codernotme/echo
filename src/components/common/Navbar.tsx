@@ -50,7 +50,7 @@ export default function Navbar() {
           <motion.div whileHover={{ scale: 1.05 }}>
             <Link href="/" className="flex-shrink-0">
               <h1 className="text-2xl font-semibold md:text-3xl transition-all hover:text-primary">
-                devhive
+                devhive-α
               </h1>
             </Link>
           </motion.div>
@@ -94,7 +94,7 @@ export default function Navbar() {
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <SignOutButton>
-                    <Button variant="ghost" color="danger" className="w-full">
+                    <Button variant="solid" className="w-full bg-red-700">
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
                     </Button>
@@ -135,12 +135,7 @@ export default function Navbar() {
                   </div>
                   <NavItems />
                   <div className="pt-4 pb-3 border-t border-gray-700">
-                    <div className="flex items-center px-5">
-                      <Avatar
-                        className="h-10 w-10 rounded-full"
-                        src={user?.imageUrl}
-                        alt={user?.email}
-                      />
+                    <div className="flex items-center px-2">
                       <div className="ml-3">
                         <div className="text-base font-medium leading-none text-white">
                           {user?.name}
@@ -151,11 +146,11 @@ export default function Navbar() {
                       </div>
                     </div>
                     <div className="mt-3 px-2 space-y-1">
-                      <Button className="w-full mt-2">
+                      <Button className="w-full mt-2" color="primary">
                         <Link href="/dashboard">My Settings</Link>
                       </Button>
                       <SignOutButton>
-                        <Button color="danger" className="w-full mt-2">
+                        <Button variant="solid" className="w-full mt-2 bg-red-700">
                           <LogOut className="mr-2 h-4 w-4" />
                           Log out
                         </Button>
