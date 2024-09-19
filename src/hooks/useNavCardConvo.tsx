@@ -13,14 +13,6 @@ export const useNavigation = () => {
         href: "/chat/conversations",
         icon: <ChatBubbleIcon />,
         active: pathname === "/chat/conversations"
-      },
-      {
-        /*{
-        name: "Friends",
-        href: "/chat/private",
-        icon: <HeartFilledIcon />,
-        active: pathname === "/chat/private"
-      }*/
       }
     ],
     [pathname]

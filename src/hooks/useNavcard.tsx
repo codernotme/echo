@@ -25,32 +25,7 @@ export const useNavigation = () => {
         href: "/friends",
         icon: <AvatarIcon />,
         active: pathname === "/friends"
-      },
-      {
-        name: "Project",
-        href: "/projects",
-        icon: <BackpackIcon />,
-        active: pathname === "/projects"
       }
-      /*{
-        name: "Chat",
-        href: "/chat/conversations",
-        icon: <ChatBubbleIcon />,
-        active: pathname === "/chat/conversations"
-      },
-      {
-        name: "Event",
-        href: "/events",
-        icon: <CalendarIcon />,
-        active: pathname === "/events"
-      },
-      
-      {
-        name: "Watch",
-        href: "/watch",
-        icon: <VideoIcon />,
-        active: pathname === "/watch"
-      }*/
     ],
     [pathname]
   );
