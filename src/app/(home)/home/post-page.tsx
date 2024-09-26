@@ -10,25 +10,17 @@ import {
   CardFooter,
   CardHeader
 } from "@/components/ui/card";
-import {
-  HeartIcon,
-  MessageCircleIcon,
-  ShareIcon,
-  TrashIcon
-} from "lucide-react";
+import { Image } from "@nextui-org/image";
 import dynamic from "next/dynamic";
 import { api } from "../../../../convex/_generated/api";
-import { Image } from "@nextui-org/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Id } from "../../../../convex/_generated/dataModel";
 
-// Dynamically load the PostModal component
 const PostModal = dynamic(() => import("./post-modal"), { ssr: false });
 
-// Expandable text component to handle long posts
 const ExpandableText = ({ content }: { content: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const maxLength = 100; // Max characters before truncating
+  const maxLength = 100;
 
   if (!content) return null;
 
@@ -41,7 +33,7 @@ const ExpandableText = ({ content }: { content: string }) => {
       {isExpanded ? content : `${content.substring(0, maxLength)}...`}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="text-blue-500 ml-1"
+        className="text-blue-500 dark:text-blue-400 transition-colors duration-300 hover:text-blue-700 dark:hover:text-blue-300 ml-1"
       >
         {isExpanded ? "Show less" : "Read more"}
       </button>
@@ -50,11 +42,9 @@ const ExpandableText = ({ content }: { content: string }) => {
 };
 
 export default function PostPage() {
-  // Fetch posts using the Convex API
   const posts = useQuery(api.posts.get);
-  const deletePost = useMutation(api.post.deletePost); // Mutation to delete post
+  const deletePost = useMutation(api.post.deletePost);
 
-  // Handle deleting a post
   const handleDelete = async (postId: Id<"posts">) => {
     try {
       await deletePost({ postId });
@@ -63,7 +53,6 @@ export default function PostPage() {
     }
   };
 
-  // Loading state with skeleton placeholders
   if (!posts) {
     return (
       <div className="container mx-auto max-w-screen-md space-y-4">
@@ -75,18 +64,21 @@ export default function PostPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <header className="flex flex-col sm:flex-row justify-between items-center mb-6">
+    <div className="py-6">
+      <div className="space-y-6 py-6">
         <PostModal />
-      </header>
-
+      </div>
       <div className="space-y-6 w-full">
         {posts.map((post: any) => (
           <Card
             key={post.post._id}
             className="w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto py-4"
+            style={{
+              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.1)",
+              borderRadius: "12px"
+            }}
           >
-            <CardHeader>
+            <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <Avatar>
@@ -94,8 +86,8 @@ export default function PostPage() {
                     <AvatarFallback>{post.authorName?.[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold text-md">{post.authorName}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-semibold text-md ">{post.authorName}</p>
+                    <p className="text-sm">
                       {new Date(post.post._creationTime).toLocaleDateString(
                         "en-US",
                         {
@@ -111,36 +103,69 @@ export default function PostPage() {
                 {post.isCurrentUser && (
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={() => handleDelete(post.post._id)}
+                    className="transition-colors duration-300 hover:bg-red-100"
                   >
-                    <TrashIcon className="mr-2 h-4 w-4 text-red-500" />
+                    <Image
+                      src="/assets/trash.png"
+                      width="md"
+                      height="md"
+                      alt="Delete"
+                    />
                   </Button>
                 )}
               </div>
             </CardHeader>
             <CardContent>
-              <ExpandableText content={post.post.content || ""} />
+              <p className="mb-4 text-base">
+                <ExpandableText content={post.post.content || ""} />
+              </p>
               {post.post.imageUrl && (
                 <Image
                   src={post.post.imageUrl}
                   alt="Post content"
-                  className="rounded-lg max-w-[500] h-auto max-h-[50vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] xl:max-h-[90vh] z-0"
+                  className="rounded-lg max-w-full h-auto max-h-[50vh] sm:max-h-[60vh]"
                   loading="lazy"
                 />
               )}
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button variant="ghost" size="sm">
-                <HeartIcon className="mr-2 h-4 w-4" />
-                {post.post.likesCount || 0}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="transition-colors duration-300 hover:text-red-500"
+              >
+                <Image
+                  src="/assets/heart-icon.png"
+                  width="20"
+                  height="20"
+                  alt="Like"
+                />
               </Button>
-              <Button variant="ghost" size="sm">
-                <MessageCircleIcon className="mr-2 h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="transition-colors duration-300 hover:text-blue-500"
+              >
+                <Image
+                  src="/assets/comment.png"
+                  width="20"
+                  height="20"
+                  alt="Comment"
+                />
               </Button>
-              <Button variant="ghost" size="sm">
-                <ShareIcon className="mr-2 h-4 w-4" />
-                Share
+              <Button
+                variant="ghost"
+                size="icon"
+                className="transition-colors duration-300 hover:text-green-500"
+              >
+                <Image
+                  src="/assets/share.png"
+                  width="20"
+                  height="20"
+                  alt="Share"
+                />
               </Button>
             </CardFooter>
           </Card>

@@ -151,6 +151,16 @@ export default function UserProfileDashboard() {
                           ago
                         </p>
                         <p>{post.post.content}</p>
+                        {post.post.imageUrl && (
+                          <Image
+                            src={post.post.imageUrl}
+                            alt="Post content"
+                            className="rounded-md"
+                            width="auto"
+                            height="auto"
+                            loading="lazy" // Lazy loading for images
+                          />
+                        )}
                         <div className="flex items-center mt-4 space-x-4">
                           <Button variant="ghost" size="sm">
                             <ThumbsUp className="mr-2 h-4 w-4" />
@@ -212,24 +222,6 @@ export default function UserProfileDashboard() {
                         {friend.name}
                       </p>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Photos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((photo) => (
-                  <div
-                    key={photo}
-                    className="aspect-square bg-muted rounded-md flex items-center justify-center"
-                  >
-                    <ImageIcon className="h-6 w-6 text-muted-foreground" />
                   </div>
                 ))}
               </div>

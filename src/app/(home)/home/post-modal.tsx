@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog";
+import { Card, CardHeader, CardFooter } from "@/components/ui/card"; // Card component
 import { ImageIcon, VideoIcon, SmileIcon, SendIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -15,7 +9,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Image } from "@nextui-org/image";
 
-export default function PostModal() {
+export default function PostCard() {
   const [isOpen, setIsOpen] = useState(false);
   const [postText, setPostText] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -62,7 +56,7 @@ export default function PostModal() {
 
       toast.success("Post created successfully!");
 
-      // Close the modal and reset the form after posting
+      // Close and reset the card after posting
       setIsOpen(false);
       setPostText("");
       setSelectedImage(null);
@@ -74,24 +68,23 @@ export default function PostModal() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button>Create Post</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Create a new post</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
+    <div className="flex justify-center items-center px-4 mx-auto">
+      <Card className="w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto py-4 p-6 rounded-lg shadow-md">
+        <CardHeader>
+          <h2 className="text-xl font-semibold text-center dark:text-white text-neutral-900">
+            Create a new post
+          </h2>
+        </CardHeader>
+        <div className="space-y-4">
           <Textarea
             placeholder="What's on your mind?"
             value={postText}
             onChange={(e) => setPostText(e.target.value)}
             className="resize-none"
           />
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center space-x-2">
             <label className="cursor-pointer">
-              <ImageIcon className="h-6 w-6" />
+              <ImageIcon className="h-6 w-6 dark:text-neutral-200 text-neutral-900" />
               <Input
                 type="file"
                 accept="image/*"
@@ -100,7 +93,7 @@ export default function PostModal() {
               />
             </label>
             <label className="cursor-pointer">
-              <VideoIcon className="h-6 w-6" />
+              <VideoIcon className="h-6 w-6 dark:text-neutral-200 text-neutral-900" />
               <Input
                 type="file"
                 accept="video/*"
@@ -109,7 +102,7 @@ export default function PostModal() {
               />
             </label>
             <Button variant="ghost" size="icon" onClick={handleGifSelect}>
-              <SmileIcon className="h-6 w-6" />
+              <SmileIcon className="h-6 w-6 dark:text-neutral-200 text-neutral-900" />
             </Button>
           </div>
           <div className="space-y-2">
@@ -117,7 +110,7 @@ export default function PostModal() {
               <Image
                 src={selectedImage}
                 alt="Selected"
-                className="max-w-full h-auto"
+                className="max-w-full h-auto rounded-md"
                 width={500}
               />
             )}
@@ -125,23 +118,30 @@ export default function PostModal() {
               <video
                 src={selectedVideo}
                 controls
-                className="max-w-full h-auto"
+                className="max-w-full h-auto rounded-md"
               />
             )}
             {selectedGif && (
               <Image
                 src={selectedGif}
                 alt="Selected GIF"
-                className="max-w-full h-auto"
+                className="max-w-full h-auto rounded-md"
                 width={500}
               />
             )}
           </div>
         </div>
-        <Button onClick={handlePost} className="w-full">
-          <SendIcon className="mr-2 h-4 w-4" /> Post
-        </Button>
-      </DialogContent>
-    </Dialog>
+        <CardFooter className="pt-4 flex items-center">
+          <Button onClick={handlePost} size={"icon"} variant={"ghost"}>
+            <Image
+              src="/assets/send-post.png"
+              alt="Post"
+              width="md"
+              height="md"
+            />
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }

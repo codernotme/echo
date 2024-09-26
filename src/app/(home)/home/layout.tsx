@@ -1,7 +1,5 @@
-import SideNavR from "@/components/common/SideNavR";
-
 export const metadata = {
-  title: "devhive"
+  title: "ECHO"
 };
 export default function RootLayout({
   children

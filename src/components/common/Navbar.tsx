@@ -50,7 +50,7 @@ export default function Navbar() {
           <motion.div whileHover={{ scale: 1.05 }}>
             <Link href="/" className="flex-shrink-0">
               <h1 className="text-2xl font-semibold md:text-3xl transition-all hover:text-primary">
-                devhive-α
+                ECHO
               </h1>
             </Link>
           </motion.div>
