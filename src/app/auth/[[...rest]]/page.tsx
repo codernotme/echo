@@ -106,7 +106,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 flex justify-between items-center py-4">
           <Link href="/" className="flex items-center space-x-2">
             <Code className="h-8 w-8 text-pink-500" />
-            <span className="text-2xl font-medium text-gray-200">devhive-α</span>
+            <span className="text-2xl font-medium text-gray-200">ECHO</span>
           </Link>
         </div>
       </header>
