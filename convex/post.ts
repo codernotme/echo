@@ -10,8 +10,9 @@ export const create = mutation({
     content: v.optional(v.string()), // Optional: Text content
     imageUrl: v.optional(v.string()),// Optional: Image URL
     videoUrl: v.optional(v.string()),// Optional: Video URL
+    gifUrl: v.optional(v.string())
   },
-  handler: async (ctx, { type, content, imageUrl, videoUrl }) => {
+  handler: async (ctx, { type, content, imageUrl, videoUrl, gifUrl }) => {
     // Get the current user identity
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -23,7 +24,6 @@ export const create = mutation({
       ctx,
       clerkId: identity.subject,
     });
-    
     if (!currentUser) {
       throw new ConvexError("User not found. Please check your account.");
     }
@@ -35,7 +35,8 @@ export const create = mutation({
       type,                      // Post type (required)
       content: content || "",    // Optional content (empty string if undefined)
       imageUrl: imageUrl || undefined, // Optional image URL (undefined if not provided)
-      videoUrl: videoUrl || undefined  // Optional video URL (undefined if not provided)
+      videoUrl: videoUrl || undefined,  // Optional video URL (undefined if not provided)
+      gifUrl: gifUrl || undefined
     };
 
     // Insert the new post into the "posts" collection
@@ -91,12 +92,50 @@ export const createComment = mutation({
   },
 });
 
-// Mutation to delete a comment
+// Mutation to delete a comment with post ownership and self-comment checks
 export const deleteComment = mutation({
   args: {
-    commentId: v.id("comments"),
+    commentId: v.id("comments"), // ID of the comment to delete
   },
   handler: async (ctx, { commentId }) => {
-    await ctx.db.delete(commentId);
+    // Get the current user identity
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized access. Please log in.");
+    }
+
+    // Retrieve the current user's details using Clerk ID
+    const currentUser = await getUserByClerkId({
+      ctx,
+      clerkId: identity.subject,
+    });
+    
+    if (!currentUser) {
+      throw new ConvexError("User not found. Please check your account.");
+    }
+
+    // Find the comment in the database
+    const comment = await ctx.db.get(commentId);
+    if (!comment) {
+      throw new ConvexError("Comment not found.");
+    }
+
+    // Find the post the comment belongs to
+    const post = await ctx.db.get(comment.postId);
+    if (!post) {
+      throw new ConvexError("Post not found.");
+    }
+
+    // Check if the current user is the owner of the post or the comment
+    const isPostOwner = post.userId === currentUser._id; // Post owner
+    const isCommentOwner = comment.userId === currentUser._id; // Comment owner
+
+    if (isPostOwner || isCommentOwner) {
+      // If the user is either the post owner or the comment owner, allow deletion
+      await ctx.db.delete(commentId);
+    } else {
+      // Otherwise, throw an error
+      throw new ConvexError("You are not authorized to delete this comment.");
+    }
   },
 });

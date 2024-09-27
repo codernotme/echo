@@ -25,6 +25,12 @@ export const useNavigation = () => {
         href: "/friends",
         icon: <AvatarIcon />,
         active: pathname === "/friends"
+      },
+      {
+        name: "Watch",
+        href: "/watch",
+        icon: <VideoIcon />,
+        active: pathname === "/watch"
       }
     ],
     [pathname]

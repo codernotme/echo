@@ -65,6 +65,7 @@ export default defineSchema({
         content: v.optional(v.string()),      // Content of the post (text)
         imageUrl: v.optional(v.string()),     // URL of the image associated with the post
         videoUrl: v.optional(v.string()),     // URL of the video associated with the post
+        gifUrl: v.optional(v.string()),       // URL of the GIF associated with the post
         type: v.string(),                     // Type of the post (text, image, video, audio)
         likesCount: v.number()                // Number of likes on the post
     })

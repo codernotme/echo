@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,14 +9,24 @@ import {
   CardHeader
 } from "@/components/ui/card";
 import { Image } from "@nextui-org/image";
-import dynamic from "next/dynamic";
 import { api } from "../../../../convex/_generated/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Id } from "../../../../convex/_generated/dataModel";
 import CommentInput from "./_components/commentInput";
 import { Heart, MessageCircle, Share2, Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import Link from "next/link";
 
-const PostModal = dynamic(() => import("./post-modal"), { ssr: false });
+import { Textarea } from "@/components/ui/textarea";
+
+import { ImageIcon, VideoIcon, SmileIcon, SendIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 const ExpandableText = ({ content }: { content: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -97,7 +105,71 @@ export default function PostPage() {
   const [expandedPostId, setExpandedPostId] = useState<Id<"posts"> | null>(
     null
   );
+  const [isOpen, setIsOpen] = useState(false);
+  const [postText, setPostText] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [selectedGif, setSelectedGif] = useState<string | null>(null);
 
+  const createPost = useMutation(api.post.create); // Backend mutation for creating posts
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedVideo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  
+  const handleGifUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedGif(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+
+
+  const handlePost = async () => {
+    try {
+      await createPost({
+        type: selectedImage ? "image" : selectedVideo ? "video" : selectedGif ? "gif" :"text" , // Specify the post type
+        content: postText ?? undefined,
+        imageUrl: selectedImage ?? undefined,
+        videoUrl: selectedVideo ?? undefined
+      });
+
+      toast.success("Post created successfully!");
+
+      // Close and reset the card after posting
+      setIsOpen(false);
+      setPostText("");
+      setSelectedImage(null);
+      setSelectedVideo(null);
+      setSelectedGif(null);
+    } catch (error) {
+      toast.error("Error creating post.");
+    }
+  };
   const handleDeleteComment = async (commentId: Id<"comments">) => {
     try {
       await deleteComment({ commentId });
@@ -129,85 +201,241 @@ export default function PostPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-lg p-4 space-y-6">
-      <PostModal />
-      {posts.map((post: any) => (
-        <Card
-          key={post.post._id}
-          className="overflow-hidden p-4 items-center justify-between "
-        >
-          <CardHeader className="p-4 flex items-center space-x-4 flex-row">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={post.authorImage} alt={post.authorName} />
-              <AvatarFallback>{post.authorName?.[0]}</AvatarFallback>
-            </Avatar>
-            <div className="flex-grow">
-              <p className="font-semibold text-gray-800 dark:text-gray-200">
-                {post.authorName}
-              </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                {new Date(post.post._creationTime).toLocaleDateString("en-US", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric"
-                })}
-              </p>
-            </div>
-            {post.isCurrentUser && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDelete(post.post._id)}
-                className="text-gray-400 hover:text-red-500"
-              >
-                <Trash2 className="h-5 w-5" />
-              </Button>
-            )}
-          </CardHeader>
-          <CardContent className="p4 space-y-4 text-lg">
-            <ExpandableText content={post.post.content || ""} />
-          </CardContent>
-          {post.post.imageUrl && (
-            <Image
-              src={post.post.imageUrl}
-              alt="Post content"
-              className="w-full h-auto max-h-96 object-cover"
-            />
-          )}
-          <CardFooter className="p-4 flex justify-between items-center">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-gray-400 hover:text-red-500"
-            >
-              <Heart className="h-5 w-5 mr-1" />
-              <span className="text-xs">Like</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => toggleComments(post.post._id)}
-              className="text-gray-400 hover:text-blue-500"
-            >
-              <MessageCircle className="h-5 w-5 mr-1" />
-              <span className="text-xs">Comment</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-gray-400 hover:text-green-500"
-            >
-              <Share2 className="h-5 w-5 mr-1" />
-              <span className="text-xs">Share</span>
-            </Button>
-          </CardFooter>
-          <CommentSection
-            postId={post.post._id}
-            isVisible={expandedPostId === post.post._id}
-            handleDeleteComment={handleDeleteComment}
+    <div className="justify-between items-center mx-auto max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl space-y-6">
+      <div>
+      <Card className="w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl py-4 p-6 rounded-lg shadow-md">
+        <CardHeader>
+          <h2 className="text-xl font-semibold text-center dark:text-white text-neutral-900">
+            Create a new post
+          </h2>
+        </CardHeader>
+        <div className="space-y-4">
+          <Textarea
+            placeholder="What's on your mind?"
+            value={postText}
+            onChange={(e) => setPostText(e.target.value)}
+            className="resize-none"
           />
-        </Card>
-      ))}
+          <div className="flex justify-between items-center space-x-2">
+            <label className="cursor-pointer">
+              <ImageIcon className="h-6 w-6 dark:text-neutral-200 text-neutral-900" />
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </label>
+            <label className="cursor-pointer">
+              <VideoIcon className="h-6 w-6 dark:text-neutral-200 text-neutral-900" />
+              <Input
+                type="file"
+                accept="video/*"
+                onChange={handleVideoUpload}
+                className="hidden"
+              />
+            </label>
+            <label className="cursor-pointer">
+            <SmileIcon className="h-6 w-6 dark:text-neutral-200 text-neutral-900" />
+            <Input
+                type="file"
+                accept="gif/*"
+                onChange={handleGifUpload}
+                className="hidden"
+              />
+              </label>
+          </div>
+          <div className="space-y-2">
+            {selectedImage && (
+              <Image
+                src={selectedImage}
+                alt="Selected"
+                className="max-w-full h-auto rounded-md"
+                width={500}
+              />
+            )}
+            {selectedVideo && (
+              <video
+                src={selectedVideo}
+                controls
+                className="max-w-full h-auto rounded-md"
+              />
+            )}
+            {selectedGif && (
+              <Image
+                src={selectedGif}
+                alt="Selected GIF"
+                className="max-w-full h-auto rounded-md"
+                width={500}
+              />
+            )}
+          </div>
+        </div>
+        <CardFooter className="pt-4 flex items-center justify-end">
+          <Button onClick={handlePost} size={"icon"} variant={"ghost"}>
+            <Image
+              src="/assets/send-post.png"
+              alt="Post"
+              width="md"
+              height="md"
+            />
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+    {posts.map((post: any) => (
+  <Card
+    key={post.post._id}
+    className="overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 items-center justify-between shadow-lg rounded-lg"
+  >
+    <CardHeader className="p-4 flex items-center space-x-4 flex-row">
+      <Avatar className="w-10 h-10">
+        <AvatarImage src={post.authorImage} alt={post.authorName} />
+        <AvatarFallback>{post.authorName?.[0]}</AvatarFallback>
+      </Avatar>
+      <div className="flex-grow">
+        <p className="font-semibold truncate">{post.authorName}</p>
+        <p className="text-xs">
+          {new Date(post.post._creationTime).toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+          })}
+        </p>
+      </div>
+      {post.isCurrentUser && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDelete(post.post._id)}
+          className="text-gray-400 hover:text-red-500"
+        >
+          <Trash2 className="h-5 w-5" />
+        </Button>
+      )}
+    </CardHeader>
+    <CardContent className="p-4 space-y-4 text-lg">
+      <ExpandableText content={post.post.content || ""} />
+    </CardContent>
+
+    {/* Image Display */}
+    {post.post.imageUrl && (
+      <Image
+        src={post.post.imageUrl}
+        alt="Post content"
+        className="w-full h-auto max-h-60 sm:max-h-80 object-cover rounded-lg"
+      />
+    )}
+    
+    {/* Video Display */}
+    {post.post.videoUrl && (
+      <video
+        src={post.post.videoUrl}
+        controls
+        className="w-full h-auto max-h-60 sm:max-h-80 object-cover rounded-lg"
+      />
+    )}
+
+    {/* GIF Display */}
+    {post.post.gifUrl && (
+      <Image
+        src={post.post.gifUrl}
+        alt="Post GIF"
+        className="w-full h-auto max-h-60 sm:max-h-80 object-cover rounded-lg"
+      />
+    )}
+
+    <CardFooter className="p-4 flex justify-between items-center">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-gray-400 hover:text-red-500"
+      >
+        <Heart className="h-5 w-5 mr-1" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => toggleComments(post.post._id)}
+        className="text-gray-400 hover:text-blue-500"
+      >
+        <MessageCircle className="h-5 w-5 mr-1" />
+      </Button>
+
+      {/* Dialog for sharing post */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-gray-400 hover:text-green-500"
+          >
+            <Share2 className="h-5 w-5 mr-1" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>Share Post</DialogHeader>
+          <div className="flex space-x-4 justify-center">
+            {/* Twitter Share Button */}
+            <Button size={"icon"} variant={"ghost"} className="bg-white">
+              <Link
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                  window.location.href
+                )}`}
+                target="_blank"
+              >
+                <Image
+                  src="/assets/twitter.png"
+                  alt="twitter"
+                  width={"auto"}
+                  height={"auto"}
+                />
+              </Link>
+            </Button>
+            {/* Facebook Share Button */}
+            <Button size={"icon"} variant={"ghost"}>
+              <Link
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                  window.location.href
+                )}`}
+                target="_blank"
+              >
+                <Image
+                  src="/assets/facebook.png"
+                  alt="facebook"
+                  width={"auto"}
+                  height={"auto"}
+                />
+              </Link>
+            </Button>
+            {/* WhatsApp Share Button */}
+            <Button size={"icon"} variant={"ghost"}>
+              <Link
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                  window.location.href
+                )}`}
+                target="_blank"
+              >
+                <Image
+                  src="/assets/whatsapp.png"
+                  alt="whatsapp"
+                  width={"auto"}
+                  height={"auto"}
+                />
+              </Link>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </CardFooter>
+    <CommentSection
+      postId={post.post._id}
+      isVisible={expandedPostId === post.post._id}
+      handleDeleteComment={handleDeleteComment}
+    />
+  </Card>
+))}
+
     </div>
   );
 }
