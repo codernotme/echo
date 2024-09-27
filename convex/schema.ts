@@ -69,4 +69,13 @@ export default defineSchema({
         likesCount: v.number()                // Number of likes on the post
     })
     .index("by_userId", ["userId"]),
+
+    // Define the "comments" table to store comments on posts
+    comments: defineTable({
+        postId: v.id("posts"),                // ID of the post the comment belongs to
+        userId: v.id("users"),                // ID of the user who made the comment
+        content: v.string(),                  // Content of the comment
+    })
+    .index("by_postId", ["postId"])
+    .index("by_userId", ["userId"]),
 });

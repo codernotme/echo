@@ -1,4 +1,4 @@
-import { ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { query } from "./_generated/server";
 import { getUserByClerkId } from "./_utils";
 
@@ -93,6 +93,65 @@ export const get = query({
       // Handle and log errors for better debugging
       console.error("Error fetching posts:", error);
       throw new ConvexError("Failed to fetch posts");
+    }
+  },
+});
+
+export const getComments = query({
+  args: { postId: v.id("posts") }, // Accept postId as an argument
+  handler: async (ctx, { postId }) => {
+    try {
+      // Retrieve the authenticated user's identity
+      const identity = await ctx.auth.getUserIdentity();
+
+      if (!identity) {
+        throw new ConvexError("Unauthorized");
+      }
+
+      // Fetch the current user details using their Clerk ID
+      const currentUser = await getUserByClerkId({
+        ctx,
+        clerkId: identity.subject,
+      });
+
+      if (!currentUser) {
+        throw new ConvexError("User not found");
+      }
+
+      // Fetch comments for the specific post
+      const comments = await ctx.db
+        .query("comments")
+        .withIndex("by_postId", (q) => q.eq("postId", postId))
+        .collect();
+
+      // Check if any comments were found
+      if (!comments.length) {
+        return []; // Return an empty array if no comments found
+      }
+
+      // Fetch author details for each comment
+      const commentsWithAuthors = await Promise.all(
+        comments.map(async (comment) => {
+          const author = await ctx.db.get(comment.userId);
+
+          if (!author) {
+            throw new ConvexError("Comment author not found");
+          }
+
+          return {
+            comment,
+            authorImage: author.imageUrl,
+            authorName: author.username,
+          };
+        })
+      );
+
+      return commentsWithAuthors;
+
+    } catch (error) {
+      // Handle and log errors for better debugging
+      console.error("Error fetching comments:", error);
+      throw new ConvexError("Failed to fetch comments");
     }
   },
 });

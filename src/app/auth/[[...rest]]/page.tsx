@@ -7,7 +7,13 @@ import { gsap } from "gsap";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import AuthCard from "./card";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/modal"; // Adjust imports as per your modal component
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
+} from "@nextui-org/modal"; // Adjust imports as per your modal component
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -60,7 +66,11 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black text-gray-200 font-sans">
       {/* Modal */}
-      <Modal isOpen={isOpen} onOpenChange={setIsOpen} className="bg-gray-700 p-4">
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        className="bg-gray-700 p-4"
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -69,11 +79,11 @@ export default function LandingPage() {
               </ModalHeader>
               <ModalBody>
                 <p className="text-md text-red-700">
-                  *We take login credentials for the website, but don&apos;t worry, everything is safe and won&apos;t be used to do any harm or cause privacy leaks.*
+                  *We take login credentials for the website, but don&apos;t
+                  worry, everything is safe and won&apos;t be used to do any
+                  harm or cause privacy leaks.*
                 </p>
-                <p>
-                  Here is a video demo on how this site works
-                </p>
+                <p>Here is a video demo on how this site works</p>
                 <video
                   width="100%"
                   height="auto"
@@ -94,10 +104,8 @@ export default function LandingPage() {
         </ModalContent>
       </Modal>
 
-      
-
-{/* Header */}
-<header
+      {/* Header */}
+      <header
         ref={headerRef}
         className={`fixed w-full transition-all duration-300 z-10 ${
           scrolled ? "bg-opacity-80 shadow-lg" : "bg-transparent"
@@ -227,7 +235,7 @@ export default function LandingPage() {
               Ready to elevate your coding journey?
             </h2>
             <p className="text-xl mb-8">
-              Join thousands of developers already connecting on devhive.
+              Join thousands of developers already connecting on Echo.
             </p>
             <Button className="bg-white text-indigo-500 hover:bg-gray-100 px-8 py-3 text-lg font-semibold rounded-full transition-all inline-flex items-center">
               <Dialog>
@@ -250,12 +258,10 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <Code className="h-8 w-8 text-pink-500" />
-              <span className="text-2xl font-medium text-gray-200">
-                devhive
-              </span>
+              <span className="text-2xl font-medium text-gray-200">Echo</span>
             </div>
             <div className="text-gray-400">
-              &copy; 2024 devhive. All rights reserved.
+              &copy; 2024 Echo. All rights reserved.
             </div>
           </div>
         </div>

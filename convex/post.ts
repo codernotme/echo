@@ -54,3 +54,49 @@ export const deletePost = mutation({
     await ctx.db.delete(postId);
   },
 });
+
+export const createComment = mutation({
+  args: {
+    postId: v.id("posts"),        // Required: Post ID the comment belongs to
+    content: v.string(),          // Required: Content of the comment
+  },
+  handler: async (ctx, { postId, content }) => {
+    // Get the current user identity
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized access. Please log in.");
+    }
+
+    // Retrieve user details using Clerk ID
+    const currentUser = await getUserByClerkId({
+      ctx,
+      clerkId: identity.subject,
+    });
+    
+    if (!currentUser) {
+      throw new ConvexError("User not found. Please check your account.");
+    }
+
+    // Construct the new comment data
+    const commentData = {
+      postId,            // Post ID
+      userId: currentUser._id,   // Current user ID
+      content            // Comment content
+    };
+
+    // Insert the new comment into the "comments" collection
+    const newComment = await ctx.db.insert("comments", commentData);
+
+    return newComment;
+  },
+});
+
+// Mutation to delete a comment
+export const deleteComment = mutation({
+  args: {
+    commentId: v.id("comments"),
+  },
+  handler: async (ctx, { commentId }) => {
+    await ctx.db.delete(commentId);
+  },
+});

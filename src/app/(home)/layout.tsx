@@ -3,7 +3,7 @@ import SidebarWrapper from "@/components/common/SidebarWrapper";
 import SideNav from "@/components/common/SideNav";
 
 export const metadata = {
-  title: "devhive"
+  title: "Echo"
 };
 export default function RootLayout({
   children

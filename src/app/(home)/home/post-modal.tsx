@@ -131,7 +131,7 @@ export default function PostCard() {
             )}
           </div>
         </div>
-        <CardFooter className="pt-4 flex items-center">
+        <CardFooter className="pt-4 flex items-center justify-end">
           <Button onClick={handlePost} size={"icon"} variant={"ghost"}>
             <Image
               src="/assets/send-post.png"
