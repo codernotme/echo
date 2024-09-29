@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Image } from "@nextui-org/image";
 interface Video {
   id: { videoId: string };
   snippet: {
@@ -22,7 +22,6 @@ export default function VideoSearch({ onVideoSelect }: VideoSearchProps) {
   const [query, setQuery] = useState("");
   const [videos, setVideos] = useState<Video[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const searchVideos = async () => {
     setIsLoading(true);
@@ -34,11 +33,6 @@ export default function VideoSearch({ onVideoSelect }: VideoSearchProps) {
       setVideos(res.data.items);
     } catch (error) {
       console.error("Error fetching videos:", error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch videos. Please try again.",
-        variant: "destructive"
-      });
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +67,7 @@ export default function VideoSearch({ onVideoSelect }: VideoSearchProps) {
               className="p-4 flex items-start space-x-4"
               onClick={() => onVideoSelect(video.id.videoId)}
             >
-              <img
+              <Image
                 src={video.snippet.thumbnails.medium.url}
                 alt={video.snippet.title}
                 className="w-40 h-24 object-cover rounded"
