@@ -11,7 +11,7 @@ export default function VideoPlayer({ videoId }: VideoPlayerProps) {
   return (
     <Card className="bg-card">
       <CardContent className="p-4">
-        <div className="relative w-full" style={{ paddingTop: '56.25%' }}> {/* 16:9 Aspect Ratio */}
+        <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
           {videoId ? (
             <iframe
               src={`https://www.youtube.com/embed/${videoId}`}

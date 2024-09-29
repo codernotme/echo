@@ -12,8 +12,8 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+      <div className="mx-auto px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
           <VideoPlayer videoId={selectedVideoId} />
           <VideoSearch onVideoSelect={handleVideoSelect} />
