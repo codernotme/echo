@@ -155,3 +155,17 @@ export const getComments = query({
     }
   },
 });
+
+export const getLike = query({
+  args: {
+    postId: v.id("posts"), // Accept the post ID
+  },
+  handler: async (ctx, { postId }) => {
+    const post = await ctx.db.get(postId);
+    if (!post) {
+      throw new ConvexError("Post not found");
+    }
+
+    return post.likesCount || 0;
+  },
+});

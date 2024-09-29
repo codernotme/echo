@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation } from "./_generated/server";
 import { getUserByClerkId } from "./_utils";
+import { Id } from "./_generated/dataModel";
 
 // Mutation to create a new post
 export const create = mutation({
@@ -36,7 +37,8 @@ export const create = mutation({
       content: content || "",    // Optional content (empty string if undefined)
       imageUrl: imageUrl || undefined, // Optional image URL (undefined if not provided)
       videoUrl: videoUrl || undefined,  // Optional video URL (undefined if not provided)
-      gifUrl: gifUrl || undefined
+      gifUrl: gifUrl || undefined,
+      likedByCurrentUser: false,               // Array of user IDs who have liked the post
     };
 
     // Insert the new post into the "posts" collection
@@ -82,7 +84,8 @@ export const createComment = mutation({
     const commentData = {
       postId,            // Post ID
       userId: currentUser._id,   // Current user ID
-      content            // Comment content
+      content,            // Comment content
+      commentsCount: 0,   // Initial comments count
     };
 
     // Insert the new comment into the "comments" collection
@@ -139,3 +142,52 @@ export const deleteComment = mutation({
     }
   },
 });
+
+export const like = mutation({
+  args: {
+    postId: v.id("posts"), // Validates postId
+  },
+  handler: async (ctx, args) => {
+    // Get the current user's identity from the authentication context
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized access. Please log in.");
+    }
+
+    const post = await ctx.db.get(args.postId);
+    if (!post) {
+      throw new ConvexError("Post not found.");
+    }
+    const currentUser = await getUserByClerkId({
+      ctx,
+      clerkId: identity.subject,
+    });
+    if (!currentUser) {
+      throw new ConvexError("User not found. Please check your account.");
+    }
+
+    // Assuming the post has a 'likedByCurrentUser' field to track whether the current user has liked it
+    const hasLiked = post.likedByCurrentUser || false;
+
+    if (hasLiked) {
+      // If the user already liked the post, decrement the like count and toggle `likedByCurrentUser`
+      await ctx.db.patch(args.postId, {
+        likesCount: post.likesCount > 0 ? post.likesCount - 1 : 0,
+        likedByCurrentUser: false, // User unlikes the post
+      });
+
+      return { message: "You have unliked the post." }; // Toast for unliking
+    } else {
+      // If the user hasn't liked the post, increment the like count and toggle `likedByCurrentUser`
+      await ctx.db.patch(args.postId, {
+        likesCount: post.likesCount + 1,
+        likedByCurrentUser: true, // User likes the post
+      });
+
+      return { message: "You have liked the post." }; // Toast for liking
+    }
+  },
+});
+
+
+

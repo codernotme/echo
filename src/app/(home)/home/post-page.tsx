@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use client";
+import React, { use, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ImageIcon, VideoIcon, SmileIcon, SendIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { getLike } from "../../../../convex/posts";
 
 const ExpandableText = ({ content }: { content: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -192,6 +194,15 @@ export default function PostPage() {
   const toggleComments = (postId: Id<"posts">) => {
     setExpandedPostId(expandedPostId === postId ? null : postId);
   };
+  const likePost = useMutation(api.post.like);
+
+  const handleLike = async (postId: Id<"posts">) => {
+    try {
+      await likePost({ postId });
+    } catch (error) {
+      console.error("Failed to like post:", error);
+    }
+  };
 
   if (!posts) {
     return (
@@ -348,11 +359,14 @@ export default function PostPage() {
           </CardContent>
           <CardFooter className="p-4 flex justify-between items-center">
             <Button
+              onClick={() => handleLike(post.post._id)}
               variant="ghost"
               size="sm"
               className="text-gray-400 hover:text-red-500"
             >
-              <Heart className="h-5 w-5 mr-1" />
+              <Heart className="h-5 w-5" />
+              <span className="ml-2">{post.post.likesCount || 0}</span>{" "}
+              {/* Show likes count */}
             </Button>
             <Button
               variant="ghost"

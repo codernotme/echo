@@ -67,7 +67,8 @@ export default defineSchema({
         videoUrl: v.optional(v.string()),     // URL of the video associated with the post
         gifUrl: v.optional(v.string()),       // URL of the GIF associated with the post
         type: v.string(),                     // Type of the post (text, image, video, audio)
-        likesCount: v.number()                // Number of likes on the post
+        likesCount: v.number(),               // Number of likes on the post
+        likedByCurrentUser: v.optional(v.boolean()),       // Boolean indicating if the current user has liked the post
     })
     .index("by_userId", ["userId"]),
 

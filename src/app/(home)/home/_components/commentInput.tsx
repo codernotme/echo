@@ -1,7 +1,5 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import { useConversation } from "@/hooks/useConversation";
-import React, { useRef } from "react";
 import { z } from "zod";
 import { UseMutationState } from "@/hooks/useMutationState";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +19,7 @@ import { SendHorizonalIcon } from "lucide-react";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
 
+// Define the validation schema for the chat input
 const chatSchema = z.object({
   type: z.literal("text"),
   content: z.string().min(1, {
@@ -55,12 +54,15 @@ const ChatInput: React.FC<Props> = ({ postId }) => {
 
   const handleSubmit = async (values: z.infer<typeof chatSchema>) => {
     try {
+      // Call the mutation to create a comment and increment the comments count
       await createComment({
         postId,
         content: values.content
       });
-      form.reset();
+      form.reset(); // Reset the form upon successful comment submission
+      toast.success("Comment added successfully!"); // Notify the user of success
     } catch (error) {
+      // Handle errors appropriately
       toast.error(
         error instanceof ConvexError ? error.data : "Unexpected error occurred"
       );
