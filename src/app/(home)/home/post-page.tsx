@@ -353,7 +353,7 @@ export default function PostPage() {
               onClick={handlePost}
               size="icon"
               variant="ghost"
-              className="button"
+              className="button justify-between"
             >
               <div className="outline"></div>
               <div className="state state--default">
@@ -435,7 +435,7 @@ export default function PostPage() {
       {posts.map((post: any) => (
         <Card
           key={post.post._id}
-          className="overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 items-center justify-between shadow-lg rounded-lg"
+          className="overflow-hidden max-w-full sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] p-4 items-center justify-between shadow-lg rounded-lg"
         >
           <CardHeader className="p-4 flex items-center space-x-4 flex-row">
             <Avatar className="w-10 h-10">
