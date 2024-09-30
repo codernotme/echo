@@ -1,7 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation } from "./_generated/server";
 import { getUserByClerkId } from "./_utils";
-import { Id } from "./_generated/dataModel";
 
 // Mutation to create a new post
 export const create = mutation({
@@ -170,16 +169,17 @@ export const like = mutation({
 
     // Check if the user has already liked the post
     const likeRecord = await ctx.db.query("likes")
-    .filter(q => q.eq(q.field("postId"), args.postId) && q.eq(q.field("userId"), currentUser._id))
-    .first();
+      .filter(q => q.eq(q.field("postId"), args.postId) && q.eq(q.field("userId"), currentUser._id))
+      .first();
 
     if (likeRecord) {
-      // If user has already liked the post, unlike it
+      // If the user has already liked the post, unlike it
       await ctx.db.delete(likeRecord._id);
 
-      // Decrease the likes count on the post
+      // Decrease the likes count on the post, but ensure it doesn't go below 0
+      const newLikesCount = post.likesCount > 0 ? post.likesCount - 1 : 0;
       await ctx.db.patch(args.postId, {
-        likesCount: post.likesCount - 1,
+        likesCount: newLikesCount,
       });
     } else {
       // Otherwise, like the post
@@ -197,7 +197,3 @@ export const like = mutation({
     return { success: true };
   },
 });
-
-
-
-
