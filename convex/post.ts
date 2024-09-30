@@ -38,7 +38,6 @@ export const create = mutation({
       imageUrl: imageUrl || undefined, // Optional image URL (undefined if not provided)
       videoUrl: videoUrl || undefined,  // Optional video URL (undefined if not provided)
       gifUrl: gifUrl || undefined,
-      likedByCurrentUser: false,               // Array of user IDs who have liked the post
     };
 
     // Insert the new post into the "posts" collection
@@ -154,10 +153,13 @@ export const like = mutation({
       throw new ConvexError("Unauthorized access. Please log in.");
     }
 
+    // Fetch the post
     const post = await ctx.db.get(args.postId);
     if (!post) {
       throw new ConvexError("Post not found.");
     }
+
+    // Fetch the current user
     const currentUser = await getUserByClerkId({
       ctx,
       clerkId: identity.subject,
@@ -166,28 +168,36 @@ export const like = mutation({
       throw new ConvexError("User not found. Please check your account.");
     }
 
-    // Assuming the post has a 'likedByCurrentUser' field to track whether the current user has liked it
-    const hasLiked = post.likedByCurrentUser || false;
+    // Check if the user has already liked the post
+    const likeRecord = await ctx.db.query("likes")
+    .filter(q => q.eq(q.field("postId"), args.postId) && q.eq(q.field("userId"), currentUser._id))
+    .first();
 
-    if (hasLiked) {
-      // If the user already liked the post, decrement the like count and toggle `likedByCurrentUser`
+    if (likeRecord) {
+      // If user has already liked the post, unlike it
+      await ctx.db.delete(likeRecord._id);
+
+      // Decrease the likes count on the post
       await ctx.db.patch(args.postId, {
-        likesCount: post.likesCount > 0 ? post.likesCount - 1 : 0,
-        likedByCurrentUser: false, // User unlikes the post
+        likesCount: post.likesCount - 1,
+      });
+    } else {
+      // Otherwise, like the post
+      await ctx.db.insert("likes", {
+        userId: currentUser._id,
+        postId: args.postId,
       });
 
-      return { message: "You have unliked the post." }; // Toast for unliking
-    } else {
-      // If the user hasn't liked the post, increment the like count and toggle `likedByCurrentUser`
+      // Increase the likes count on the post
       await ctx.db.patch(args.postId, {
         likesCount: post.likesCount + 1,
-        likedByCurrentUser: true, // User likes the post
       });
-
-      return { message: "You have liked the post." }; // Toast for liking
     }
+
+    return { success: true };
   },
 });
+
 
 
 

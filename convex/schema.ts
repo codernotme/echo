@@ -61,16 +61,21 @@ export default defineSchema({
 
     // Define the "posts" table to store post information
     posts: defineTable({
-        userId: v.id("users"),                // The ID of the user who created the post
-        content: v.optional(v.string()),      // Content of the post (text)
-        imageUrl: v.optional(v.string()),     // URL of the image associated with the post
-        videoUrl: v.optional(v.string()),     // URL of the video associated with the post
-        gifUrl: v.optional(v.string()),       // URL of the GIF associated with the post
-        type: v.string(),                     // Type of the post (text, image, video, audio)
-        likesCount: v.number(),               // Number of likes on the post
-        likedByCurrentUser: v.optional(v.boolean()),       // Boolean indicating if the current user has liked the post
-    })
-    .index("by_userId", ["userId"]),
+        userId: v.id("users"),           // The ID of the user who created the post
+        content: v.optional(v.string()), // Content of the post (text)
+        imageUrl: v.optional(v.string()), // URL of the image associated with the post
+        videoUrl: v.optional(v.string()), // URL of the video associated with the post
+        gifUrl: v.optional(v.string()),  // URL of the GIF associated with the post
+        type: v.string(),                // Type of the post (text, image, video, audio)
+        likesCount: v.number(),          // Number of likes on the post
+      }).index("by_userId", ["userId"]),
+
+    likes: defineTable({
+        postId: v.id("posts"),   // The ID of the liked post
+        userId: v.id("users"),   // The ID of the user who liked the post
+      })
+      .index("by_post_and_user", ["postId", "userId"]),
+
 
     // Define the "comments" table to store comments on posts
     comments: defineTable({
