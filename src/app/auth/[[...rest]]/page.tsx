@@ -1,268 +1,324 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Button } from "@nextui-org/button";
-import { Code, Terminal, Share2, Users, ChevronRight } from "lucide-react";
-import { gsap } from "gsap";
-import Link from "next/link";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import AuthCard from "./card";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter
-} from "@nextui-org/modal"; // Adjust imports as per your modal component
+  Globe,
+  Users,
+  Zap,
+  ChevronRight,
+  Github,
+  Twitter,
+  Linkedin,
+  Heart,
+  MessageCircle,
+  Share2,
+  Volume2
+} from "lucide-react";
+import AuthCard from "./card";
+import { Image } from "@nextui-org/image";
 
 export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [isOpen, setIsOpen] = useState(true); // State to control modal visibility
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
-  // Refs for GSAP animations
-  const heroRef = useRef(null);
-  const featuresRef = useRef(null);
-  const howItWorksRef = useRef(null);
-  const headerRef = useRef(null);
+  const { scrollYProgress } = useScroll();
+  const headerBackground = useTransform(
+    scrollYProgress,
+    [0, 0.1],
+    ["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0.8)"]
+  );
 
-  // GSAP Animation
   useEffect(() => {
-    gsap.fromTo(
-      heroRef.current,
-      { opacity: 0, y: 50 },
-      { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
-    );
-
-    gsap.fromTo(
-      featuresRef.current,
-      { opacity: 0, scale: 0.8 },
-      { opacity: 1, scale: 1, duration: 1.5, ease: "elastic.out(1, 0.5)" }
-    );
-
-    gsap.fromTo(
-      howItWorksRef.current,
-      { opacity: 0, x: -50 },
-      { opacity: 1, x: 0, duration: 1.5, ease: "power2.out" }
-    );
-  }, []);
-
-  // Scroll handler for header transition and GSAP animation
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-      gsap.to(headerRef.current, {
-        backgroundColor: window.scrollY > 50 ? "#1a202c" : "transparent",
-        duration: 0.5,
-        ease: "power2.out"
-      });
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursorPosition({ x: e.clientX, y: e.clientY });
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
   }, []);
 
-  // Close modal function
-  const onClose = () => setIsOpen(false);
+  const scrollToJoin = () => {
+    const joinSection = document.getElementById("join");
+    if (joinSection) {
+      joinSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black text-gray-200 font-sans">
-      {/* Modal */}
-      <Modal
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
-        className="bg-gray-700 p-4"
+    <div className="min-h-screen bg-black text-white overflow-hidden">
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage:
+            'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+          backgroundAttachment: "fixed"
+        }}
+      />
+      <div
+        className="absolute inset-0 z-0 bg-gradient-radial from-blue-500/20 via-purple-500/20 to-transparent"
+        style={{
+          backgroundPosition: `${cursorPosition.x}px ${cursorPosition.y}px`,
+          backgroundSize: "600px 600px",
+          backgroundRepeat: "no-repeat"
+        }}
+      />
+      <div
+        className="fixed w-8 h-8 rounded-full bg-blue-500 mix-blend-screen pointer-events-none z-50 hidden md:block"
+        style={{
+          left: cursorPosition.x - 16,
+          top: cursorPosition.y - 16,
+          transition: "left 0.1s, top 0.1s"
+        }}
+      />
+      <motion.header
+        className="fixed top-0 left-0 right-0 z-40"
+        style={{ backgroundColor: headerBackground }}
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-3">
-                Security Notice
-              </ModalHeader>
-              <ModalBody>
-                <p className="text-md text-red-700">
-                  *We take login credentials for the website, but don&apos;t
-                  worry, everything is safe and won&apos;t be used to do any
-                  harm or cause privacy leaks.*
-                </p>
-                <p>Here is a video demo on how this site works</p>
-                <video
-                  width="100%"
-                  height="auto"
-                  controls
-                  className="mt-4 rounded-lg"
-                >
-                  <source src="/path-to-video.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="primary" radius="md" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-
-      {/* Header */}
-      <header
-        ref={headerRef}
-        className={`fixed w-full transition-all duration-300 z-10 ${
-          scrolled ? "bg-opacity-80 shadow-lg" : "bg-transparent"
-        }`}
-      >
-        <div className="container mx-auto px-4 flex justify-between items-center py-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <Code className="h-8 w-8 text-pink-500" />
-            <span className="text-2xl font-medium text-gray-200">ECHO</span>
-          </Link>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <main>
-        <section ref={heroRef} className="pt-32 pb-20 px-4 text-center">
-          <div className="container mx-auto max-w-4xl">
-            <h1 className="text-6xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500">
-              Connect. Code.{" "}
-              <span className="text-indigo-500">Collaborate.</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-12">
-              The ultimate platform for developers to share, learn, and build
-              together.
-            </p>
-            <div className="max-w-md mx-auto">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="shiny-cta px-2 py-4">
-                    <span>Join Now</span>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="p-6 w-full max-w-md mx-auto bg-transparent">
-                  <AuthCard />
-                </DialogContent>
-              </Dialog>
-            </div>
+        <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+            ECHO
+          </h1>
+          <div className="hidden md:flex space-x-6">
+            <a
+              href="#features"
+              className="hover:text-blue-400 transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="#community"
+              className="hover:text-blue-400 transition-colors"
+            >
+              Community
+            </a>
+            <a href="#join" className="hover:text-blue-400 transition-colors">
+              Join
+            </a>
           </div>
-        </section>
+          <Button
+            onClick={scrollToJoin}
+            className="bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+          >
+            Sign Up
+          </Button>
+        </nav>
+      </motion.header>
+
+      <main>
+        {/* Hero Section */}
+        <motion.section
+          className="pt-32 pb-20 px-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="container mx-auto text-center">
+            <h2 className="text-6xl md:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-pulse">
+              Amplify Your Voice
+            </h2>
+            <p className="text-2xl md:text-3xl mb-8 text-gray-300">
+              Join ECHO, where your thoughts resonate and connections amplify.
+            </p>
+            <Button
+              size="lg"
+              onClick={scrollToJoin}
+              className="text-lg px-8 py-6 bg-blue-600 text-white hover:bg-blue-700 transition-colors animate-bounce"
+            >
+              Get Started <ChevronRight className="ml-2" />
+            </Button>
+          </div>
+        </motion.section>
 
         {/* Features Section */}
-        <section ref={featuresRef} className="py-20 bg-gray-800">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-              Why Developers Choose Us
-            </h2>
+        <section id="features" className="py-20 px-4">
+          <div className="container mx-auto">
+            <h3 className="text-4xl font-bold mb-12 text-center text-blue-400">
+              Why ECHO Resonates
+            </h3>
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
-                  icon: <Terminal className="h-8 w-8 text-indigo-500" />,
-                  title: "Code Sharing",
-                  description: "Share and discuss code snippets with ease."
+                  icon: Globe,
+                  title: "Global Reach",
+                  description: "Your voice, heard worldwide"
                 },
                 {
-                  icon: <Users className="h-8 w-8 text-indigo-500" />,
-                  title: "Developer Network",
-                  description: "Connect with developers worldwide."
+                  icon: Users,
+                  title: "Vibrant Communities",
+                  description: "Find your frequency, join the conversation"
                 },
                 {
-                  icon: <Share2 className="h-8 w-8 text-indigo-500" />,
-                  title: "Collaborative Projects",
-                  description: "Find partners for your next big idea."
+                  icon: Zap,
+                  title: "Instant Connections",
+                  description: "Real-time interactions, lasting impressions"
                 }
               ].map((feature, index) => (
-                <div
+                <motion.div
                   key={index}
-                  className="bg-gray-900 p-6 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <div className="mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-400">{feature.description}</p>
-                </div>
+                  <Card className="bg-gray-900 border-none h-full hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 hover:rotate-3">
+                    <CardContent className="pt-6">
+                      <feature.icon className="w-16 h-16 mb-4 text-blue-400" />
+                      <h4 className="text-2xl font-semibold mb-2 text-purple-400">
+                        {feature.title}
+                      </h4>
+                      <p className="text-gray-300 text-lg">
+                        {feature.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section ref={howItWorksRef} className="py-20">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-              How It Works
-            </h2>
-            <div className="space-y-12">
-              {[
-                {
-                  title: "Create Your Profile",
-                  description:
-                    "Sign up and showcase your skills, projects, and experiences."
-                },
-                {
-                  title: "Connect with Peers",
-                  description:
-                    "Find and follow developers with similar interests and expertise."
-                },
-                {
-                  title: "Share Your Code",
-                  description:
-                    "Post snippets, get feedback, and collaborate on projects."
-                },
-                {
-                  title: "Grow Your Network",
-                  description:
-                    "Engage in discussions, join groups, and expand your professional circle."
-                }
-              ].map((step, index) => (
-                <div key={index} className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold">
-                    {index + 1}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                    <p className="text-gray-400">{step.description}</p>
-                  </div>
-                </div>
+        {/* Community Section */}
+        <section id="community" className="py-20 px-4 bg-gray-900">
+          <div className="container mx-auto text-center">
+            <h3 className="text-4xl font-bold mb-12 text-blue-400">
+              Join Our Resonant Community
+            </h3>
+            <div className="flex flex-wrap justify-center gap-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  whileHover={{ scale: 1.1, rotate: 12 }}
+                >
+                  <Avatar className="w-20 h-20 border-2 border-purple-500">
+                    <AvatarImage src={`https://i.pravatar.cc/150?img=${i}`} />
+                    <AvatarFallback>U{i}</AvatarFallback>
+                  </Avatar>
+                </motion.div>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* Call to Action Section */}
-        <section className="py-20 bg-gradient-to-r from-pink-500 to-indigo-500 text-white">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Ready to elevate your coding journey?
-            </h2>
-            <p className="text-xl mb-8">
-              Join thousands of developers already connecting on Echo.
+            <p className="mt-12 text-2xl text-gray-300">
+              Millions are already echoing. Will you join the chorus?
             </p>
-            <Button className="bg-white text-indigo-500 hover:bg-gray-100 px-8 py-3 text-lg font-semibold rounded-full transition-all inline-flex items-center">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <span>Join Now</span>
-                </DialogTrigger>
-                <DialogContent className="p-6 w-full max-w-md mx-auto bg-transparent">
-                  <AuthCard />
-                </DialogContent>
-              </Dialog>
-              <ChevronRight className="ml-2 h-5 w-5" />
-            </Button>
+          </div>
+        </section>
+
+        {/* Interactive Post Preview */}
+        <section className="py-20 px-4">
+          <div className="container mx-auto max-w-2xl">
+            <h3 className="text-4xl font-bold mb-12 text-center text-blue-400">
+              Experience the Resonance
+            </h3>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <Card className="bg-gray-800 border-none h-full lg:w-[500px] md:w-[400px] sm:w-[300px]">
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    <Avatar className="w-12 h-12 border-2 border-purple-500">
+                      <AvatarImage src="https://i.pravatar.cc/150?img=30" />
+                      <AvatarFallback>JD</AvatarFallback>
+                    </Avatar>
+                    <div className="ml-4">
+                      <p className="font-semibold">Jane Doe</p>
+                      <p className="text-sm text-gray-400">@jane_echoes</p>
+                    </div>
+                  </div>
+                  <p className="text-lg mb-4">
+                    Just joined ECHO and I&apos;m loving the vibe here! 🎉
+                    #NewVoice #ECHOchamber
+                  </p>
+                  <div className="relative">
+                    <Image
+                      src="/images/ECHO-logo.png"
+                      alt="Abstract digital wave"
+                      className="w-full rounded-lg mb-4"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/50 to-purple-500/50 mix-blend-overlay rounded-lg" />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="ghost"
+                      className="text-pink-400 hover:text-pink-300 hover:bg-pink-400/20 transition-colors group"
+                    >
+                      <Heart className="w-5 h-5 mr-2 group-hover:animate-ping" />
+                      <span>1.2k</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/20 transition-colors group"
+                    >
+                      <MessageCircle className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+                      <span>234</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-green-400 hover:text-green-300 hover:bg-green-400/20 transition-colors group"
+                    >
+                      <Share2 className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                      <span>56</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Join Section */}
+        <section id="join" className="py-20 px-4 bg-gray-900">
+          <div className="container mx-auto max-w-md text-center">
+            <h3 className="text-4xl font-bold mb-6 text-blue-400">
+              Ready to Echo?
+            </h3>
+            <p className="mb-8 text-gray-300 text-xl">
+              Join ECHO now and let your voice resonate!
+            </p>
+            <div className="flex justify-center">
+              <AuthCard />
+            </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Code className="h-8 w-8 text-pink-500" />
-              <span className="text-2xl font-medium text-gray-200">Echo</span>
-            </div>
-            <div className="text-gray-400">
-              &copy; 2024 Echo. All rights reserved.
-            </div>
+      <footer className="bg-gray-900 py-12 px-4">
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-400 mb-4 md:mb-0">
+            © 2024 ECHO. All rights reserved.
+          </p>
+          <div className="flex space-x-6">
+            <a
+              href="#"
+              className="text-gray-400 hover:text-blue-400 transition-colors transform hover:scale-110"
+            >
+              <Github className="w-8 h-8" />
+            </a>
+            <a
+              href="#"
+              className="text-gray-400 hover:text-blue-400 transition-colors transform hover:scale-110"
+            >
+              <Twitter className="w-8 h-8" />
+            </a>
+            <a
+              href="#"
+              className="text-gray-400 hover:text-blue-400 transition-colors transform hover:scale-110"
+            >
+              <Linkedin className="w-8 h-8" />
+            </a>
           </div>
         </div>
       </footer>
