@@ -1,6 +1,7 @@
 "use client";
 import React, { use, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
+import { useDropzone } from "react-dropzone";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +15,17 @@ import { api } from "../../../../convex/_generated/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Id } from "../../../../convex/_generated/dataModel";
 import CommentInput from "./_components/commentInput";
-import { Heart, MessageCircle, Share2, Trash2 } from "lucide-react";
+import {
+  Heart,
+  ImageIcon,
+  MessageCircle,
+  Send,
+  Share2,
+  Smile,
+  Trash2,
+  Upload,
+  Video
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +36,8 @@ import Link from "next/link";
 
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { ChatBubbleIcon } from "@radix-ui/react-icons";
+import { Input } from "@/components/ui/input";
 
 const ExpandableText = ({ content }: { content: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -107,36 +120,43 @@ export default function PostPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
+  const createPost = useMutation(api.post.create);
+  const [fileUploaded, setFileUploaded] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
 
-  const createPost = useMutation(api.post.create); // Backend mutation for creating posts
-  const [fileUploaded, setFileUploaded] = useState(false); // State to track if a file has been uploaded
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    const reader = new FileReader();
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const fileType = file.type;
+    reader.onloadend = () => {
+      const fileType = file.type;
 
-        if (fileType.startsWith("image/")) {
-          if (fileType === "image/gif") {
-            setSelectedGif(reader.result as string); // Set the GIF
-          } else {
-            setSelectedImage(reader.result as string); // Set the image
-          }
-        } else if (fileType.startsWith("video/")) {
-          setSelectedVideo(reader.result as string); // Set the video
+      if (fileType.startsWith("image/")) {
+        if (fileType === "image/gif") {
+          setSelectedGif(reader.result as string);
+        } else {
+          setSelectedImage(reader.result as string);
         }
+      } else if (fileType.startsWith("video/")) {
+        setSelectedVideo(reader.result as string);
+      }
 
-        // Set the state to true, meaning a file has been uploaded
-        setFileUploaded(true);
-      };
-      reader.readAsDataURL(file);
-    }
+      setFileUploaded(true);
+    };
+
+    reader.readAsDataURL(file);
   };
 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".jpg", ".jpeg", ".png"],
+      "video/*": [".mp4", ".mov"],
+      "gif/*": [".gif"]
+    }
+  });
+
   const handlePost = async () => {
-    // Check if post text is provided or if there's at least one media type selected
     const isPostValid =
       postText?.trim() !== "" || selectedImage || selectedVideo || selectedGif;
 
@@ -144,8 +164,10 @@ export default function PostPage() {
       toast.error(
         "Please add text or select an image, video, or GIF to create a post."
       );
-      return; // Exit the function if no valid post content is found
+      return;
     }
+
+    setIsPosting(true);
 
     try {
       await createPost({
@@ -155,24 +177,32 @@ export default function PostPage() {
             ? "video"
             : selectedGif
               ? "gif"
-              : "text", // Specify the post type
+              : "text",
         content: postText ?? undefined,
         imageUrl: selectedImage ?? undefined,
         videoUrl: selectedVideo ?? undefined,
-        gifUrl: selectedGif ?? undefined // Added gifUrl for GIF uploads
+        gifUrl: selectedGif ?? undefined
       });
 
-      toast.success("Post created successfully!");
-      // Clear selections after posting
-      setSelectedImage("");
-      setSelectedVideo("");
-      setSelectedGif("");
-      setPostText(""); // Clear post text if necessary
+      toast.success("Post created successfully!", {
+        icon: "📝",
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff"
+        }
+      });
+      setSelectedImage(null);
+      setSelectedVideo(null);
+      setSelectedGif(null);
+      setPostText("");
+      setFileUploaded(false);
     } catch (error) {
       toast.error("Failed to create post. Please try again.");
+    } finally {
+      setIsPosting(false);
     }
   };
-
   const handleDeleteComment = async (commentId: Id<"comments">) => {
     try {
       await deleteComment({ commentId });
@@ -213,28 +243,31 @@ export default function PostPage() {
   }
 
   return (
-    <div className="justify-between items-center mx-auto max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl space-y-6">
+    <div className="justify-between items-center mx-auto max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl space-y-6 p-4 top-0">
       <div>
-        <Card className="w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl py-4 p-6 rounded-lg shadow-md">
+        <Card className="overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 items-center justify-between shadow-lg rounded-lg">
           <CardHeader>
-            <h2 className="text-xl font-semibold text-center dark:text-white text-neutral-900">
-              Create a new post
+            <h2 className="text-2xl font-bold text-center">
+              Create a New Post
             </h2>
           </CardHeader>
-          <div className="space-y-4">
+          <CardContent className="space-y-4">
             <Textarea
               placeholder="What's on your mind?"
               value={postText}
               onChange={(e) => setPostText(e.target.value)}
-              className="resize-none"
+              className="w-full min-h-[100px] bg-secondary border-gray-300 focus:border-gray-500 rounded-lg resize-none transition-colors duration-300"
             />
-            <div className="flex justify-between items-center flex-col">
-              {!fileUploaded && ( // Conditionally render the upload section
-                <label
-                  htmlFor="file-upload"
-                  className="custum-file-upload cursor-pointer"
-                >
-                  <div className="icon">
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-4 transition-colors ${isDragActive ? "border-blue-500" : "border-gray-300"} bg-secondary`}
+            >
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <p className="text-center">Drop the files here ...</p>
+              ) : (
+                <div>
+                  <div className="flex items-center justify-center max-w-[100px]">
                     <svg
                       viewBox="0 0 24 24"
                       fill=""
@@ -257,177 +290,94 @@ export default function PostPage() {
                       </g>
                     </svg>
                   </div>
-                  <div className="text">
-                    <span>Click to upload</span>
-                  </div>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    accept="image/*, video/*, image/gif" // Allows images, videos, and GIFs
-                    onChange={handleFileUpload} // Single handler for all uploads
-                    className="hidden"
-                  />
-                </label>
-              )}
-
-              {fileUploaded && (
-                /* From Uiverse.io by seyed-mohsen-mousavi */
-                <div className="flex flex-col gap-2 w-60 sm:w-72 text-[10px] sm:text-xs z-50">
-                  <div className="succsess-alert cursor-default flex items-center justify-between w-full h-12 sm:h-14 rounded-lg bg-[#232531] px-[10px]">
-                    <div className="flex gap-2">
-                      <div className="text-[#2b9875] bg-white/5 backdrop-blur-xl p-1 rounded-lg">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          className="w-6 h-6"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="m4.5 12.75 6 6 9-13.5"
-                          ></path>
-                        </svg>
-                      </div>
-                      <div className="text-white align-middle justify-between">
-                        <p className="text-white">File uploaded successfully</p>
-                        <span
-                          className="text-red-500 cursor-pointer"
-                          onClick={() => setFileUploaded(false)}
-                        >
-                          {" "}
-                          want to change file?
-                        </span>
-                      </div>
-                    </div>
-                    <Button className="text-gray-600 hover:bg-white/5 p-1 rounded-md transition-colors ease-linear">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M6 18 18 6M6 6l12 12"
-                        ></path>
-                      </svg>
-                    </Button>
-                  </div>
+                  <p className="text-center">
+                    Drag & drop files here, or click to select files
+                  </p>
                 </div>
               )}
             </div>
-            <div className="space-y-2">
-              {selectedImage && (
-                <Image
-                  src={selectedImage}
-                  alt="Selected"
-                  className="max-w-full h-auto rounded-md"
-                  width={500}
-                />
-              )}
-              {selectedVideo && (
-                <video
-                  src={selectedVideo}
-                  controls
-                  className="max-w-full h-auto rounded-md"
-                />
-              )}
-              {selectedGif && (
-                <Image
-                  src={selectedGif}
-                  alt="Selected GIF"
-                  className="max-w-full h-auto rounded-md"
-                  width={500}
-                />
-              )}
-            </div>
-          </div>
-          <CardFooter className="pt-4 flex items-center justify-end">
+            {fileUploaded && (
+              <div className="border border-gray-300 p-4 rounded-lg transition-colors duration-300">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">File uploaded successfully</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setFileUploaded(false);
+                      setSelectedImage(null);
+                      setSelectedVideo(null);
+                      setSelectedGif(null);
+                    }}
+                    className=" hover:text-red-700"
+                  >
+                    Remove
+                  </Button>
+                </div>
+                {selectedImage && (
+                  <Image
+                    src={selectedImage}
+                    alt="Selected"
+                    width={500}
+                    height={300}
+                    className="mt-2 rounded-md object-cover"
+                  />
+                )}
+                {selectedVideo && (
+                  <video
+                    src={selectedVideo}
+                    controls
+                    className="mt-2 max-w-full h-auto rounded-md"
+                  />
+                )}
+                {selectedGif && (
+                  <Image
+                    src={selectedGif}
+                    alt="Selected GIF"
+                    width={500}
+                    height={300}
+                    className="mt-2 rounded-md object-cover"
+                  />
+                )}
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex justify-end">
             <Button
               onClick={handlePost}
-              size="icon"
-              variant="ghost"
-              className="button justify-between"
+              disabled={isPosting}
+              className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
             >
-              <div className="outline"></div>
-              <div className="state state--default">
-                <div className="icon">
+              {isPosting ? (
+                <span className="flex items-center">
                   <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    height="1em"
-                    width="1em"
                   >
-                    <g style={{ filter: "url(#shadow)" }}>
-                      <path
-                        fill="currentColor"
-                        d="M14.2199 21.63C13.0399 21.63 11.3699 20.8 10.0499 16.83L9.32988 14.67L7.16988 13.95C3.20988 12.63 2.37988 10.96 2.37988 9.78001C2.37988 8.61001 3.20988 6.93001 7.16988 5.60001L15.6599 2.77001C17.7799 2.06001 19.5499 2.27001 20.6399 3.35001C21.7299 4.43001 21.9399 6.21001 21.2299 8.33001L18.3999 16.82C17.0699 20.8 15.3999 21.63 14.2199 21.63ZM7.63988 7.03001C4.85988 7.96001 3.86988 9.06001 3.86988 9.78001C3.86988 10.5 4.85988 11.6 7.63988 12.52L10.1599 13.36C10.3799 13.43 10.5599 13.61 10.6299 13.83L11.4699 16.35C12.3899 19.13 13.4999 20.12 14.2199 20.12C14.9399 20.12 16.0399 19.13 16.9699 16.35L19.7999 7.86001C20.3099 6.32001 20.2199 5.06001 19.5699 4.41001C18.9199 3.76001 17.6599 3.68001 16.1299 4.19001L7.63988 7.03001Z"
-                      ></path>
-                      <path
-                        fill="currentColor"
-                        d="M10.11 14.4C9.92005 14.4 9.73005 14.33 9.58005 14.18C9.29005 13.89 9.29005 13.41 9.58005 13.12L13.16 9.53C13.45 9.24 13.93 9.24 14.22 9.53C14.51 9.82 14.51 10.3 14.22 10.59L10.64 14.18C10.5 14.33 10.3 14.4 10.11 14.4Z"
-                      ></path>
-                    </g>
-                    <defs>
-                      <filter id="shadow">
-                        <feDropShadow
-                          floodOpacity="0.5"
-                          stdDeviation="0.6"
-                          dy="1"
-                          dx="0"
-                        ></feDropShadow>
-                      </filter>
-                    </defs>
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
-                </div>
-                <p>
-                  {Array.from("Send").map((char, index) => (
-                    <span
-                      key={index}
-                      style={{ "--i": index } as React.CSSProperties}
-                    >
-                      {char}
-                    </span>
-                  ))}
-                </p>
-              </div>
-              <div className="state state--sent">
-                <div className="icon">
-                  <svg
-                    stroke="black"
-                    strokeWidth="0.5px"
-                    width="1em"
-                    height="1em"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g style={{ filter: "url(#shadow)" }}>
-                      <path
-                        d="M12 22.75C6.07 22.75 1.25 17.93 1.25 12C1.25 6.07 6.07 1.25 12 1.25C17.93 1.25 22.75 6.07 22.75 12C22.75 17.93 17.93 22.75 12 22.75ZM12 2.75C6.9 2.75 2.75 6.9 2.75 12C2.75 17.1 6.9 21.25 12 21.25C17.1 21.25 21.25 17.1 21.25 12C21.25 6.9 17.1 2.75 12 2.75Z"
-                        fill="currentColor"
-                      ></path>
-                      <path
-                        d="M10.5795 15.5801C10.3795 15.5801 10.1895 15.5001 10.0495 15.3601L7.21945 12.5301C6.92945 12.2401 6.92945 11.7601 7.21945 11.4701C7.50945 11.1801 7.98945 11.1801 8.27945 11.4701L10.5795 13.7701L15.7195 8.6301C16.0095 8.3401 16.4895 8.3401 16.7795 8.6301C17.0695 8.9201 17.0695 9.4001 16.7795 9.6901L11.1095 15.3601C10.9695 15.5001 10.7795 15.5801 10.5795 15.5801Z"
-                        fill="currentColor"
-                      ></path>
-                    </g>
-                  </svg>
-                </div>
-                <p>
-                  <span style={{ "--i": 5 } as React.CSSProperties}>S</span>
-                  <span style={{ "--i": 6 } as React.CSSProperties}>e</span>
-                  <span style={{ "--i": 7 } as React.CSSProperties}>n</span>
-                  <span style={{ "--i": 8 } as React.CSSProperties}>t</span>
-                </p>
-              </div>
+                  Posting...
+                </span>
+              ) : (
+                <>
+                  <Send className="w-5 h-5 mr-2" />
+                  Post
+                </>
+              )}
             </Button>
           </CardFooter>
         </Card>
@@ -435,7 +385,7 @@ export default function PostPage() {
       {posts.map((post: any) => (
         <Card
           key={post.post._id}
-          className="overflow-hidden max-w-full sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] p-4 items-center justify-between shadow-lg rounded-lg"
+          className="overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 items-center justify-between shadow-lg rounded-lg"
         >
           <CardHeader className="p-4 flex items-center space-x-4 flex-row">
             <Avatar className="w-10 h-10">
@@ -542,38 +492,18 @@ export default function PostPage() {
               size="sm"
               className="text-gray-400 hover:text-red-500"
             >
-              <Heart className="h-8 w-8" strokeWidth={2} />
+              <Heart className="h-6 w-6" strokeWidth={2} />
               <span className="ml-2">{post.post.likesCount || 0}</span>{" "}
               {/* Show likes count */}
             </Button>
-            <div className="group relative">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleComments(post.post._id)}
-              >
-                <svg
-                  stroke-linejoin="round"
-                  stroke-linecap="round"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  height="44"
-                  width="44"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 hover:scale-125 duration-200 hover:stroke-blue-500"
-                  fill="none"
-                >
-                  <path fill="none" d="M0 0h24v24H0z" stroke="none"></path>
-                  <path d="M8 9h8"></path>
-                  <path d="M8 13h6"></path>
-                  <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"></path>
-                </svg>
-              </Button>
-              <span className="absolute -top-14 left-[50%] -translate-x-[50%] z-20 origin-left scale-0 px-3 rounded-lg border border-gray-300 bg-background py-2 text-sm font-bold shadow-md transition-all duration-300 ease-in-out group-hover:scale-100">
-                Comment <span> </span>
-              </span>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => toggleComments(post.post._id)}
+              className="text-gray-400 hover:text-blue-500"
+            >
+              <ChatBubbleIcon className="h-6 w-6" />
+            </Button>
 
             {/* Dialog for sharing post */}
             <Dialog>
@@ -583,7 +513,7 @@ export default function PostPage() {
                   size="sm"
                   className="text-gray-400 hover:text-green-500"
                 >
-                  <Share2 className="h-5 w-5 mr-1" />
+                  <Share2 className="h-6 w-6 mr-1" />
                 </Button>
               </DialogTrigger>
               <DialogContent>

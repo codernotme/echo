@@ -6,7 +6,7 @@ import PostPage from "./post-page";
 export default function Home() {
   return (
     <>
-      <div className="p-4 w-full">
+      <div className="w-full">
         <PostPage />
       </div>
       {/*      <SideNavR />
