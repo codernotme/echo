@@ -125,7 +125,7 @@ export default function Navbar() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`inline-flex items-center justify-center p-2 rounded-md ${theme === "dark" ? "text-gray-400 hover:text-white hover:bg-gray-700" : "text-gray-600 hover:text-black hover:bg-gray-200"}`}
+                  className={`inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700" `}
                   onClick={toggleMenu}
                 >
                   <span className="sr-only">Open main menu</span>

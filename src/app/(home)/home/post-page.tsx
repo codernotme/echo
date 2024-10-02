@@ -378,7 +378,7 @@ export default function PostPage() {
       {posts.map((post: any) => (
         <Card
           key={post.post._id}
-          className={`overflow-hidden bg-transparent max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-2 items-center justify-between shadow-lg rounded-lg ${isDragActive ? "border-blue-500" : "border-gray-300"}`}
+          className={` bg-background overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-2 items-center justify-between shadow-lg rounded-lg ${isDragActive ? "border-blue-500" : "border-gray-300"}`}
         >
           <CardHeader className="p-4 flex items-center space-x-4 flex-row">
             <Avatar className="w-10 h-10">
