@@ -400,7 +400,7 @@ export default function PostPage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => handleDelete(post.post._id)}
-                className="group relative flex h-12 w-12 flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-red-800 bg-red-400 hover:bg-red-600"
+                className="group relative flex lg:h-12 lg:w-12 sm:h-10 sm:w-10 flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-red-800 bg-red-400 hover:bg-red-600"
               >
                 <svg
                   viewBox="0 0 1.625 1.625"

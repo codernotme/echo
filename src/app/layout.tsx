@@ -72,7 +72,7 @@ export default function RootLayout({
               {/* Display different content based on user's authentication status */}
               <SignedIn>
                 {/* Main content for signed-in users */}
-                <main className="h-full w-full flex gap-4">
+                <main>
                   {children} {/* Render children components */}
                 </main>
               </SignedIn>

@@ -8,7 +8,7 @@ export default function RootLayout({
 }) {
   return (
     <>
-      <div className="w-full justify-evenly h-full p-4 flex flex-row gap-4">
+      <div className="w-full">
         {children}
         {/*<SideNavR />*/}
       </div>
