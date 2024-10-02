@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { useDropzone } from "react-dropzone";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,17 +15,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Id } from "../../../../convex/_generated/dataModel";
 import CommentInput from "./_components/commentInput";
-import {
-  Heart,
-  ImageIcon,
-  MessageCircle,
-  Send,
-  Share2,
-  Smile,
-  Trash2,
-  Upload,
-  Video
-} from "lucide-react";
+import { Heart, Send, Share2, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -34,10 +24,10 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@nextui-org/input";
 import { toast } from "sonner";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
-import { Input } from "@/components/ui/input";
+import { useTheme } from "next-themes";
 
 const ExpandableText = ({ content }: { content: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -123,6 +113,7 @@ export default function PostPage() {
   const createPost = useMutation(api.post.create);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  const { theme } = useTheme();
 
   const onDrop = (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -245,7 +236,9 @@ export default function PostPage() {
   return (
     <div className="justify-between items-center mx-auto max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl space-y-6 p-4 top-0">
       <div>
-        <Card className="overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 items-center justify-between shadow-lg rounded-lg">
+        <Card
+          className={`overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 items-center justify-between shadow-lg rounded-lg border-b ${theme === "dark" ? "border-gray-800" : "border-gray-300"} `}
+        >
           <CardHeader>
             <h2 className="text-2xl font-bold text-center">
               Create a New Post
@@ -385,7 +378,7 @@ export default function PostPage() {
       {posts.map((post: any) => (
         <Card
           key={post.post._id}
-          className="overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 items-center justify-between shadow-lg rounded-lg"
+          className={`overflow-hidden bg-transparent max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-2 items-center justify-between shadow-lg rounded-lg ${isDragActive ? "border-blue-500" : "border-gray-300"}`}
         >
           <CardHeader className="p-4 flex items-center space-x-4 flex-row">
             <Avatar className="w-10 h-10">
@@ -456,32 +449,33 @@ export default function PostPage() {
               </Button>
             )}
           </CardHeader>
-          {/* Image Display */}
-          {post.post.imageUrl && (
-            <Image
-              src={post.post.imageUrl}
-              alt="Post content"
-              className="w-full h-auto max-h-60 sm:max-h-80 object-cover rounded-lg"
-            />
-          )}
-          {/* Video Display */}
-          {post.post.videoUrl && (
-            <video
-              src={post.post.videoUrl}
-              controls
-              className="w-full h-auto max-h-60 sm:max-h-80 object-cover rounded-lg"
-            />
-          )}
+          <div className="p-4">
+            {/* Image Display */}
+            {post.post.imageUrl && (
+              <Image
+                src={post.post.imageUrl}
+                alt="Post content"
+                className=" lg:max-w-[500px] items-center object-cover rounded-lg justify-center mx-auto"
+              />
+            )}
+            {/* Video Display */}
+            {post.post.videoUrl && (
+              <video
+                src={post.post.videoUrl}
+                controls
+                className=" items-center object-cover rounded-lg"
+              />
+            )}
 
-          {/* GIF Display */}
-          {post.post.gifUrl && (
-            <Image
-              src={post.post.gifUrl}
-              alt="Post GIF"
-              className="w-full h-auto max-h-60 sm:max-h-80 object-cover rounded-lg"
-            />
-          )}
-
+            {/* GIF Display */}
+            {post.post.gifUrl && (
+              <Image
+                src={post.post.gifUrl}
+                alt="Post GIF"
+                className=" items-center rounded-lg justify-center mx-auto"
+              />
+            )}
+          </div>
           <CardContent className="p-4 space-y-4 text-lg">
             <ExpandableText content={post.post.content || ""} />
           </CardContent>

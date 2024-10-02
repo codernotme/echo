@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import { ConvexError } from "convex/values";
 import { UseMutationState } from "@/hooks/useMutationState";
 import { api } from "../../../convex/_generated/api";
+import styled from "styled-components";
 
 const addFriendFormSchema = z.object({
   username: z
@@ -68,19 +69,13 @@ const AddFriendDialog = () => {
 
   return (
     <Dialog>
-      <Tooltip>
-        <TooltipTrigger>
-          <Button size="icon" variant="outline">
-            <DialogTrigger>
-              <UserPlus2 />
-            </DialogTrigger>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Add Friend</p>
-        </TooltipContent>
-      </Tooltip>
-
+      <StyledWrapper>
+        <Button>
+          <DialogTrigger>
+            <UserPlus2 className="text-secondary-foreground" />
+          </DialogTrigger>
+        </Button>
+      </StyledWrapper>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Friend</DialogTitle>
@@ -117,5 +112,19 @@ const AddFriendDialog = () => {
     </Dialog>
   );
 };
+
+const StyledWrapper = styled.div`
+  Button {
+    background: none;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  Button:hover {
+    background: rgba(170, 170, 170, 0.062);
+    transition: 0.5s;
+  }
+`;
 
 export default AddFriendDialog;

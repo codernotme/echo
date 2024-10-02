@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -16,16 +15,12 @@ import {
   Linkedin,
   Heart,
   MessageCircle,
-  Share2,
-  Volume2
+  Share2
 } from "lucide-react";
 import AuthCard from "./card";
 import { Image } from "@nextui-org/image";
 
 export default function LandingPage() {
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
   const { scrollYProgress } = useScroll();
@@ -220,12 +215,7 @@ export default function LandingPage() {
             <h3 className="text-4xl font-bold mb-12 text-center text-blue-400">
               Experience the Resonance
             </h3>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              whileHover={{ scale: 1.05 }}
-            >
+            <div className="flex flex-col md:flex-row gap-4">
               <Card className="bg-gray-800 border-none h-full lg:w-[500px] md:w-[400px] sm:w-[300px]">
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
@@ -246,7 +236,9 @@ export default function LandingPage() {
                     <Image
                       src="/images/ECHO-logo.png"
                       alt="Abstract digital wave"
-                      className="w-full rounded-lg mb-4"
+                      className=" rounded-lg mb-4"
+                      width={360}
+                      height={240}
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/50 to-purple-500/50 mix-blend-overlay rounded-lg" />
                   </div>
@@ -275,7 +267,110 @@ export default function LandingPage() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+              <Card className="bg-gray-800 border-none h-full lg:w-[500px] md:w-[400px] sm:w-[300px]">
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    <Avatar className="w-12 h-12 border-2 border-blue-500">
+                      <AvatarImage src="https://i.pravatar.cc/150?img=45" />
+                      <AvatarFallback>AS</AvatarFallback>
+                    </Avatar>
+                    <div className="ml-4">
+                      <p className="font-semibold">Alex Smith</p>
+                      <p className="text-sm text-gray-400">@alex_writes</p>
+                    </div>
+                  </div>
+                  <p className="text-lg mb-4">
+                    Just published my latest article on tech innovations 🚀.
+                    Check it out! #TechTrends #FutureIsNow
+                  </p>
+                  <div className="relative">
+                    <Image
+                      src="/images/TechInnovation-360x240.png"
+                      alt="Tech innovation image"
+                      className="rounded-lg mb-4"
+                      width={360}
+                      height={240}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/50 to-blue-500/50 mix-blend-overlay rounded-lg" />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="ghost"
+                      className="text-pink-400 hover:text-pink-300 hover:bg-pink-400/20 transition-colors group"
+                    >
+                      <Heart className="w-5 h-5 mr-2 group-hover:animate-ping" />
+                      <span>985</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/20 transition-colors group"
+                    >
+                      <MessageCircle className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+                      <span>120</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-green-400 hover:text-green-300 hover:bg-green-400/20 transition-colors group"
+                    >
+                      <Share2 className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                      <span>43</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-none h-full lg:w-[500px] md:w-[400px] sm:w-[300px]">
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    <Avatar className="w-12 h-12 border-2 border-red-500">
+                      <AvatarImage src="https://i.pravatar.cc/150?img=22" />
+                      <AvatarFallback>MT</AvatarFallback>
+                    </Avatar>
+                    <div className="ml-4">
+                      <p className="font-semibold">Mia Thompson</p>
+                      <p className="text-sm text-gray-400">@mia_inspire</p>
+                    </div>
+                  </div>
+                  <p className="text-lg mb-4">
+                    Feeling inspired by the community today! 💖 So much
+                    creativity flowing here. #Inspiration #CommunityLove
+                  </p>
+                  <div className="relative">
+                    <Image
+                      src="/images/cross.png"
+                      alt="Community creativity image"
+                      className="rounded-lg mb-4"
+                      width={360}
+                      height={240}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-500/50 to-pink-500/50 mix-blend-overlay rounded-lg" />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="ghost"
+                      className="text-pink-400 hover:text-pink-300 hover:bg-pink-400/20 transition-colors group"
+                    >
+                      <Heart className="w-5 h-5 mr-2 group-hover:animate-ping" />
+                      <span>1.5k</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/20 transition-colors group"
+                    >
+                      <MessageCircle className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+                      <span>312</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-green-400 hover:text-green-300 hover:bg-green-400/20 transition-colors group"
+                    >
+                      <Share2 className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                      <span>87</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </section>
 

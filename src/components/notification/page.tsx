@@ -1,6 +1,5 @@
 import { BellIcon, Loader2 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { Button } from "../ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -10,6 +9,8 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import Request from "./Request";
 import { Badge } from "../ui/badge";
+import styled from "styled-components";
+import { Button } from "../ui/button";
 
 function Notification() {
   const requests = useQuery(api.requests.get) || "";
@@ -30,17 +31,32 @@ function Notification() {
   const path = paths[0];
 
   return (
-    <main className="flex flex-col gap-4">
+    <main>
       <HoverCard>
         <HoverCardTrigger>
-          <Button variant="outline" className="relative">
-            <BellIcon />
-            {path.count && (
-              <Badge className="absolute top-0 right-0 px-2">
-                {path.count}
-              </Badge>
-            )}
-          </Button>
+          <StyledWrapper>
+            <Button>
+              <div className="relative align-middle cursor-pointer text-secondary-foreground">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                >
+                  <path fill="none" d="M0 0h24v24H0z" />
+                  <path
+                    fill="currentColor"
+                    d="M20 17h2v2H2v-2h2v-7a8 8 0 1 1 16 0v7zm-2 0v-7a6 6 0 1 0-12 0v7h12zm-9 4h6v2H9v-2z"
+                  />
+                </svg>{" "}
+                {path.count && (
+                  <Badge className="absolute top-0 right-0 px-2">
+                    {path.count}
+                  </Badge>
+                )}
+              </div>
+            </Button>
+          </StyledWrapper>
         </HoverCardTrigger>
         <HoverCardContent className="w-full sm:max-w-sm md:max-w-md lg:max-w-lg max-h-72 overflow-auto p-4 bg-background shadow-lg rounded-md">
           {requests ? (
@@ -65,5 +81,18 @@ function Notification() {
     </main>
   );
 }
+const StyledWrapper = styled.div`
+  Button {
+    background: none;
+    border: none;
+    padding: 15px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
 
+  Button:hover {
+    background: rgba(170, 170, 170, 0.062);
+    transition: 0.5s;
+  }
+`;
 export default Notification;

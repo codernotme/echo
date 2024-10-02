@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Settings2, LogOut, Menu, X, Sun, Moon } from "lucide-react";
+import { Search, Settings2, LogOut, Menu, X } from "lucide-react";
 import { Button } from "@nextui-org/button";
 import { Input } from "@/components/ui/input";
 import { Avatar } from "@nextui-org/avatar";
@@ -14,19 +14,19 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel
 } from "@/components/ui/dropdown-menu";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import TButton from "@/components/theme/TButton";
-import AddFriendDialog from "@/components/common/AddFriendDialog";
-import NavbarConvo from "./NavbarChat";
-import Notification from "../notification/page";
+
 import { SignOutButton } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-
+import { useTheme } from "next-themes";
+import Navbarcontent from "./navbar-content";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const user = useQuery(api.users.get);
   const [mounted, setMounted] = useState(false);
+  const { theme } = useTheme(); // Get the current theme
 
   useEffect(() => {
     setMounted(true);
@@ -34,22 +34,16 @@ export default function Navbar() {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const NavItems = () => (
-    <>
-      <AddFriendDialog />
-      <NavbarConvo />
-      <Notification />
-    </>
-  );
-
   return (
-    <nav className="bg-background border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav
+      className={`relative overflow-hidden border-b ${theme === "dark" ? "border-gray-800" : "border-gray-300"}`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <motion.div whileHover={{ scale: 1.05 }}>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link href="/" className="flex-shrink-0">
-              <h1 className="text-2xl font-semibold md:text-3xl transition-all hover:text-primary">
+              <h1 className="text-2xl font-bold md:text-3xl transition-all hover:text-blue-400 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
                 ECHO
               </h1>
             </Link>
@@ -58,34 +52,52 @@ export default function Navbar() {
           {/* Search & Nav Items (Desktop) */}
           <div className="hidden md:flex items-center gap-4 p-2">
             <div className="flex items-center gap-4">
-              <div className="relative w-full max-w-[400px]">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <motion.div
+                className="relative w-full max-w-[400px]"
+                whileHover={{ scale: 1.02 }}
+              >
+                <Search
+                  className={`absolute left-3 top-3 h-4 w-4 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
+                />
                 <Input
                   type="search"
                   placeholder="Search for people etc..."
-                  className="w-full pl-10 rounded-lg focus-visible:ring-2 focus-visible:ring-primary dark:bg-background dark:border-darkMuted border border-muted"
+                  className={`w-full pl-10 rounded-lg focus-visible:ring-2 focus-visible:ring-blue-500 ${theme === "dark" ? "bg-secondary border-gray-700 text-white placeholder-gray-400" : "bg-white border-gray-300 text-black placeholder-gray-500"}`}
                   aria-label="Search"
                 />
-              </div>
-
-              <NavItems />
+              </motion.div>
+              <Navbarcontent />
               <TButton />
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Avatar
-                  className="h-[40px] w-[40px] rounded-full cursor-pointer"
-                  src={user?.imageUrl}
-                  alt={user?.username}
-                />
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Avatar
+                    className={`h-[40px] w-[40px] rounded-full cursor-pointer border-2 ${theme === "dark" ? "border-blue-500" : "border-blue-600"}`}
+                    src={user?.imageUrl}
+                    alt={user?.username}
+                  />
+                </motion.div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent
+                align="end"
+                className={`bg-gray-900 border border-gray-700 ${theme === "dark" ? "text-gray-300" : "bg-white text-black"}`}
+              >
                 <DropdownMenuLabel>
                   <p className="font-semibold">Signed in as</p>
-                  <p className="font-semibold">{user?.email}</p>
+                  <p
+                    className={`font-semibold ${theme === "dark" ? "text-blue-400" : "text-blue-600"}`}
+                  >
+                    {user?.email}
+                  </p>
                 </DropdownMenuLabel>
                 <DropdownMenuItem>
-                  <Button color="primary" className="w-full">
+                  <Button
+                    className={`w-full ${theme === "dark" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"}`}
+                  >
                     <Link href="/dashboard" className="flex items-center">
                       <Settings2 className="mr-2 h-4 w-4" />
                       My Settings
@@ -94,7 +106,9 @@ export default function Navbar() {
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <SignOutButton>
-                    <Button variant="solid" className="w-full bg-red-700">
+                    <Button
+                      className={`w-full ${theme === "dark" ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"}`}
+                    >
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
                     </Button>
@@ -108,50 +122,81 @@ export default function Navbar() {
           <div className="-mr-2 flex md:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="md"
-                  className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`inline-flex items-center justify-center p-2 rounded-md ${theme === "dark" ? "text-gray-400 hover:text-white hover:bg-gray-700" : "text-gray-600 hover:text-black hover:bg-gray-200"}`}
                   onClick={toggleMenu}
                 >
                   <span className="sr-only">Open main menu</span>
-                  {isOpen ? (
-                    <X className="block h-6 w-6" />
-                  ) : (
-                    <Menu className="block h-6 w-6" />
-                  )}
-                </Button>
+                  <AnimatePresence>
+                    {isOpen ? (
+                      <motion.div
+                        key="close"
+                        initial={{ rotate: 0 }}
+                        animate={{ rotate: 90 }}
+                        exit={{ rotate: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <X className="block h-6 w-6" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="menu"
+                        initial={{ rotate: 0 }}
+                        animate={{ rotate: 0 }}
+                        exit={{ rotate: -90 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Menu className="block h-6 w-6" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetContent
+                side="right"
+                className={`w-[300px] sm:w-[400px] ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"}`}
+              >
                 <nav className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                   <div className="relative w-full max-w-[400px] mb-4">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Search
+                      className={`absolute left-3 top-3 h-4 w-4 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
+                    />
                     <Input
                       type="search"
                       placeholder="Search for people etc..."
-                      className="w-full pl-10 rounded-lg focus-visible:ring-2 focus-visible:ring-primary dark:bg-background dark:border-darkMuted border border-muted"
+                      className={`w-full pl-10 rounded-lg focus-visible:ring-2 focus-visible:ring-blue-500 ${theme === "dark" ? "bg-gray-800 border-gray-700 text-white placeholder-gray-400" : "bg-white border-gray-300 text-black placeholder-gray-500"}`}
                       aria-label="Search"
                     />
                   </div>
-                  <NavItems />
+                  <Navbarcontent />
                   <div className="pt-4 pb-3 border-t border-gray-700">
                     <div className="flex items-center px-2">
                       <div className="ml-3">
-                        <div className="text-base font-medium leading-none text-white">
+                        <div
+                          className={`text-base font-medium leading-none ${theme === "dark" ? "text-white" : "text-black"}`}
+                        >
                           {user?.name}
                         </div>
-                        <div className="text-sm font-medium leading-none text-gray-400">
+                        <div
+                          className={`text-sm font-medium leading-none ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
+                        >
                           {user?.email}
                         </div>
                       </div>
                     </div>
                     <div className="mt-3 px-2 space-y-1">
-                      <Button className="w-full mt-2" color="primary">
+                      <Button
+                        className={`w-full mt-2 ${theme === "dark" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"}`}
+                      >
                         <Link href="/dashboard">My Settings</Link>
                       </Button>
                       <SignOutButton>
-                        <Button variant="solid" className="w-full mt-2 bg-red-700">
-                          <LogOut className="mr-2 h-4 w-4" />
+                        <Button
+                          variant="solid"
+                          className={`w-full mt-2 ${theme === "dark" ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"}`}
+                        >
                           Log out
                         </Button>
                       </SignOutButton>

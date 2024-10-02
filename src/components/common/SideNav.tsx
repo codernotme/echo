@@ -25,7 +25,7 @@ const DesktopNav = () => {
         className="hidden lg:flex lg:flex-col lg:justify-between lg:h-full lg:w-auto lg:px-2 lg:py-4 "
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        <Card className="flex flex-col h-full w-auto px-2 py-4 gap-4">
+        <Card className="flex flex-col h-full w-auto px-4 py-6 gap-4 mx-auto">
           <Button
             size="icon"
             variant="ghost"

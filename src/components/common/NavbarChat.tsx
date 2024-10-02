@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Navbar } from "@nextui-org/navbar";
 import { usePathname } from "next/navigation"; // Assuming usePathname is a hook to get the current pathname
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
+import styled from "styled-components";
 
 const NavbarConvo = () => {
   const pathname = usePathname();
@@ -26,20 +27,12 @@ const NavbarConvo = () => {
         <ul className="flex flex-row gap-4">
           {paths.map((path, id) => (
             <li key={id} className="relative">
-              <Link href={path.href} className="flex items-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Button
-                      size="icon"
-                      variant={path.active ? "default" : "outline"}
-                    >
-                      {path.icon}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <span>{path.name}</span>
-                  </TooltipContent>
-                </Tooltip>
+              <Link href={path.href}>
+                <StyledWrapper>
+                  <Button className="text-secondary-foreground">
+                    <ChatBubbleIcon className="h-5 w-5" />
+                  </Button>
+                </StyledWrapper>
               </Link>
             </li>
           ))}
@@ -48,5 +41,19 @@ const NavbarConvo = () => {
     </main>
   );
 };
+
+const StyledWrapper = styled.div`
+  Button {
+    background: none;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  Button:hover {
+    background: rgba(170, 170, 170, 0.062);
+    transition: 0.5s;
+  }
+`;
 
 export default NavbarConvo;
