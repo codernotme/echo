@@ -9,7 +9,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="w-full justify-between h-full p-4 flex flex-col gap-4">
+    <main className="w-full justify-between h-full flex flex-col gap-4">
       <Navbar />
       {children}
     </main>

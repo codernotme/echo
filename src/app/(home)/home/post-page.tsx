@@ -28,6 +28,7 @@ import { Textarea } from "@nextui-org/input";
 import { toast } from "sonner";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
+import styled from "styled-components";
 
 const ExpandableText = ({ content }: { content: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -225,7 +226,7 @@ export default function PostPage() {
 
   if (!posts) {
     return (
-      <div className="container mx-auto max-w-lg space-y-4 p-4">
+      <div className="container mx-auto sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl rounded-xl space-y-4 p-4">
         {[...Array(3)].map((_, idx) => (
           <Skeleton key={idx} className="h-64 w-full rounded-xl" />
         ))}
@@ -236,11 +237,9 @@ export default function PostPage() {
   return (
     <div className="justify-between items-center mx-auto max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl space-y-6 p-4 top-0">
       <div>
-        <Card
-          className={`overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 items-center justify-between shadow-lg rounded-lg border-b ${theme === "dark" ? "border-gray-800" : "border-gray-300"} `}
-        >
+        <Card className="overflow-hidden sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 border-gray-800 shadow-2xl rounded-xl">
           <CardHeader>
-            <h2 className="text-2xl font-bold text-center">
+            <h2 className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
               Create a New Post
             </h2>
           </CardHeader>
@@ -336,42 +335,27 @@ export default function PostPage() {
             )}
           </CardContent>
           <CardFooter className="flex justify-end">
-            <Button
-              onClick={handlePost}
-              disabled={isPosting}
-              className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
-            >
-              {isPosting ? (
-                <span className="flex items-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Posting...
-                </span>
-              ) : (
-                <>
-                  <Send className="w-5 h-5 mr-2" />
-                  Post
-                </>
-              )}
-            </Button>
+            <StyledWrapper>
+              <button onClick={handlePost} disabled={isPosting}>
+                <div className="svg-wrapper-1">
+                  <div className="svg-wrapper">
+                    <svg
+                      height="24"
+                      width="24"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M0 0h24v24H0z" fill="none" />
+                      <path
+                        d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <span>Post</span>
+              </button>
+            </StyledWrapper>
           </CardFooter>
         </Card>
       </div>
@@ -575,3 +559,77 @@ export default function PostPage() {
     </div>
   );
 }
+
+const StyledWrapper = styled.div`
+  button {
+    font-family: inherit;
+    font-size: 18px;
+    background: linear-gradient(to bottom, #4dc7d9 0%, #66a6ff 100%);
+    color: white;
+    padding: 0.8em 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+  }
+
+  button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+    padding: 0em;
+    background: linear-gradient(to bottom, #5bd9ec 0%, #97c3ff 100%);
+    cursor: pointer;
+  }
+
+  button:active {
+    transform: scale(0.95);
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  button span {
+    display: block;
+    margin-left: 0.4em;
+    transition: all 0.3s;
+  }
+
+  button:hover span {
+    scale: 0;
+    font-size: 0%;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  button svg {
+    width: 18px;
+    height: 18px;
+    fill: white;
+    transition: all 0.3s;
+  }
+
+  button .svg-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s;
+  }
+
+  button:hover .svg-wrapper {
+    background-color: rgba(43, 169, 228, 0.897);
+    width: 54px;
+    height: 54px;
+  }
+
+  button:hover svg {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+    transform: rotate(45deg);
+  }
+`;

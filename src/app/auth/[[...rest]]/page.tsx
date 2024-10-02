@@ -18,6 +18,7 @@ import {
   Share2
 } from "lucide-react";
 import AuthCard from "./card";
+import { Link } from "@nextui-org/link";
 import { Image } from "@nextui-org/image";
 
 export default function LandingPage() {
@@ -84,21 +85,24 @@ export default function LandingPage() {
             ECHO
           </h1>
           <div className="hidden md:flex space-x-6">
-            <a
+            <Link
               href="#features"
               className="hover:text-blue-400 transition-colors"
             >
               Features
-            </a>
-            <a
+            </Link>
+            <Link
               href="#community"
               className="hover:text-blue-400 transition-colors"
             >
               Community
-            </a>
-            <a href="#join" className="hover:text-blue-400 transition-colors">
+            </Link>
+            <Link
+              href="#join"
+              className="hover:text-blue-400 transition-colors"
+            >
               Join
-            </a>
+            </Link>
           </div>
           <Button
             onClick={scrollToJoin}
@@ -396,24 +400,24 @@ export default function LandingPage() {
             © 2024 ECHO. All rights reserved.
           </p>
           <div className="flex space-x-6">
-            <a
-              href="#"
+            <Link
+              href="https://github.com/codernotme/echo"
               className="text-gray-400 hover:text-blue-400 transition-colors transform hover:scale-110"
             >
               <Github className="w-8 h-8" />
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="https://x.com/codernotme"
               className="text-gray-400 hover:text-blue-400 transition-colors transform hover:scale-110"
             >
               <Twitter className="w-8 h-8" />
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="https://www.linkedin.com/in/codernotme/"
               className="text-gray-400 hover:text-blue-400 transition-colors transform hover:scale-110"
             >
               <Linkedin className="w-8 h-8" />
-            </a>
+            </Link>
           </div>
         </div>
       </footer>

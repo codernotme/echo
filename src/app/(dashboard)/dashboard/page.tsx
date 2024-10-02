@@ -54,14 +54,22 @@ export default function UserProfileDashboard() {
 
   if (!userPosts || !friends || !users) {
     return (
-      <div className="flex justify-center items-center h-screen text-lg">
-        Loading...
+      <div className="container flex justify-center items-center h-full">
+        <div className="loader">
+          <div className="loader-square"></div>
+          <div className="loader-square"></div>
+          <div className="loader-square"></div>
+          <div className="loader-square"></div>
+          <div className="loader-square"></div>
+          <div className="loader-square"></div>
+          <div className="loader-square"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 w-full">
       <Card className="w-full">
         <CardContent className="p-0">
           <div className="relative h-48"></div>
@@ -88,8 +96,8 @@ export default function UserProfileDashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-        <div className="md:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 mt-4 space-y-4 md:space-y-0">
+        <div className="md:col-span-2 space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>About</CardTitle>
@@ -132,7 +140,7 @@ export default function UserProfileDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="mt-4">
+          <Card className="mx-auto">
             <CardHeader>
               <CardTitle>Posts</CardTitle>
             </CardHeader>
@@ -145,12 +153,14 @@ export default function UserProfileDashboard() {
                 <TabsContent value="posts">
                   {userPosts.map((post) => (
                     <Card key={post.post._id} className="mb-4">
-                      <CardContent className="pt-4">
-                        <p className="text-sm text-muted-foreground mb-2">
+                      <CardContent className="p-4">
+                        <p className="text-sm text-muted-foreground mb-2 text-left">
                           {new Date(post.post._creationTime).toLocaleString()}{" "}
                           ago
                         </p>
-                        <p>{post.post.content}</p>
+                        <p className="text-lg text-left bg-secondary rounded-md p-2">
+                          {post.post.content}
+                        </p>
                         {post.post.imageUrl && (
                           <Image
                             src={post.post.imageUrl}
@@ -158,7 +168,7 @@ export default function UserProfileDashboard() {
                             className="rounded-md"
                             width="auto"
                             height="auto"
-                            loading="lazy" // Lazy loading for images
+                            loading="lazy"
                           />
                         )}
                         <div className="flex items-center mt-4 space-x-4">
@@ -201,7 +211,7 @@ export default function UserProfileDashboard() {
           </Card>
         </div>
 
-        <div>
+        <div className="px-4">
           <Card>
             <CardHeader>
               <CardTitle>Friends</CardTitle>

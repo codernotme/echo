@@ -36,7 +36,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`relative overflow-hidden border-b ${theme === "dark" ? "border-gray-800" : "border-gray-300"}`}
+      className={`relative overflow-hidden border-b bg-background ${theme === "dark" ? "border-gray-800" : "border-gray-300"}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex items-center justify-between h-16">
