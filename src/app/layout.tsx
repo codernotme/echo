@@ -57,6 +57,19 @@ export default function RootLayout({
   return (
     <ConvexClientProvider>
       <html lang="en">
+        <head>
+          <meta name="twitter:card" content="summary" />
+          <meta name="twitter:title" content="ECHO App" />
+          <meta name="twitter:description" content="Best App in the world" />
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content="ECHO App" />
+          <meta property="og:description" content="Best App in the world" />
+          <meta property="og:site_name" content="ECHO App" />
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
+          />
+        </head>
         <body
           className={`${poppins.className} flex flex-col w-full min-h-screen no-scrollbar`}
           // Apply Poppins font, flexbox layout, padding, gap, and custom styling
