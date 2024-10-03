@@ -17,19 +17,19 @@ export const useNavigation = () => {
       {
         name: "Home",
         href: "/home",
-        icon: <HomeIcon />,
+        icon: <HomeIcon className="h-6 w-6" />,
         active: pathname === "/home"
       },
       {
         name: "Friends",
         href: "/friends",
-        icon: <AvatarIcon />,
+        icon: <AvatarIcon className="h-6 w-6" />,
         active: pathname === "/friends"
       },
       {
         name: "Watch",
         href: "/watch",
-        icon: <VideoIcon />,
+        icon: <VideoIcon className="h-6 w-6" />,
         active: pathname === "/watch"
       }
     ],

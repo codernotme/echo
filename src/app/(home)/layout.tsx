@@ -12,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <>
-      <main className="w-full justify-between h-full">
+      <main className="w-full justify-between min-h-screen">
         <Navbar />
         <SidebarWrapper>
           <SideNav />

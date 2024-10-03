@@ -6,7 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ImageIcon, Mail, MessageCircle, ThumbsUp, User } from "lucide-react";
+import {
+  ImageIcon,
+  Mail,
+  MessageCircle,
+  ThumbsUp,
+  User,
+  User2Icon
+} from "lucide-react";
 import { api } from "../../../../convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
 import { useMutation, useQuery } from "convex/react";
@@ -100,7 +107,7 @@ export default function UserProfileDashboard() {
         <div className="md:col-span-2 space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>About</CardTitle>
+              <CardTitle className="flex items-center ">About</CardTitle>
             </CardHeader>
             <CardContent>
               {isEditing ? (
@@ -130,7 +137,10 @@ export default function UserProfileDashboard() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p>{userInfo.username}</p>
+                  <p className="flex items-center text-muted-foreground">
+                    <User2Icon className="mr-2 h-4 w-4" />
+                    {userInfo.username}
+                  </p>
                   <p className="flex items-center text-muted-foreground">
                     <Mail className="mr-2 h-4 w-4" />
                     {userInfo.email}

@@ -96,7 +96,7 @@ export default function Navbar() {
                 </DropdownMenuLabel>
                 <DropdownMenuItem>
                   <Button
-                    className={`w-full ${theme === "dark" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"}`}
+                    className={`w-full rounded-lg shadow-black ${theme === "dark" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"}`}
                   >
                     <Link href="/dashboard" className="flex items-center">
                       <Settings2 className="mr-2 h-4 w-4" />
@@ -107,7 +107,7 @@ export default function Navbar() {
                 <DropdownMenuItem>
                   <SignOutButton>
                     <Button
-                      className={`w-full ${theme === "dark" ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"}`}
+                      className={`w-full rounded-lg shadow-black ${theme === "dark" ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"}`}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
@@ -188,14 +188,14 @@ export default function Navbar() {
                     </div>
                     <div className="mt-3 px-2 space-y-1">
                       <Button
-                        className={`w-full mt-2 ${theme === "dark" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"}`}
+                        className={`w-full rounded-lg shadow-black mt-2 ${theme === "dark" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"}`}
                       >
                         <Link href="/dashboard">My Settings</Link>
                       </Button>
                       <SignOutButton>
                         <Button
                           variant="solid"
-                          className={`w-full mt-2 ${theme === "dark" ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"}`}
+                          className={`w-full rounded-lg shadow-black mt-2 ${theme === "dark" ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"}`}
                         >
                           Log out
                         </Button>

@@ -4,10 +4,10 @@ import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useNavigation } from "../../hooks/useNavcard";
-import { UserButton } from "@clerk/clerk-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { motion } from "framer-motion";
 import { ArrowBigRightDashIcon, X } from "lucide-react";
+import styled from "styled-components";
 
 const DesktopNav = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -44,12 +44,15 @@ const DesktopNav = () => {
                   >
                     <Tooltip>
                       <TooltipTrigger>
-                        <Button
-                          size="icon"
-                          variant={path.active ? "default" : "outline"}
-                        >
-                          {path.icon}
-                        </Button>
+                        <StyledWrapper>
+                          <Button
+                            size="icon"
+                            variant={path.active ? "default" : "outline"}
+                            className="text-secondary-foreground"
+                          >
+                            {path.icon}
+                          </Button>
+                        </StyledWrapper>
                       </TooltipTrigger>
                       {isCollapsed && (
                         <TooltipContent>
@@ -64,7 +67,7 @@ const DesktopNav = () => {
                         transition={{ delay: 0.1 }}
                         className="ml-2 text-base"
                       >
-                        {path.name}
+                        <Link href={path.href}>{path.name}</Link>
                       </motion.span>
                     )}
                   </Link>
@@ -72,15 +75,12 @@ const DesktopNav = () => {
               ))}
             </ul>
           </nav>
-          {/*<div className="flex flex-col items-center gap-2 p-2">
-            <UserButton />
-          </div>*/}
         </Card>
       </motion.div>
 
       {/* Bottom navigation for mobile view */}
-      <div className="fixed bottom-0 left-0 right-0 w-full h-16 bg-background lg:hidden z-50">
-        <Card className="flex flex-col h-full w-auto px-2 py-4 gap-4">
+      <div className="fixed bottom-0 left-0 right-0 w-full h-14 bg-background lg:hidden z-50">
+        <Card className="flex flex-col h-full w-auto gap-4 mx-auto">
           <div className="flex items-center justify-around h-full">
             {paths.map((path, id) => (
               <Link
@@ -90,12 +90,15 @@ const DesktopNav = () => {
               >
                 <Tooltip>
                   <TooltipTrigger>
-                    <Button
-                      size="icon"
-                      variant={path.active ? "default" : "outline"}
-                    >
-                      {path.icon}
-                    </Button>
+                    <StyledWrapper>
+                      <Button
+                        size="icon"
+                        variant={path.active ? "default" : "outline"}
+                        className="text-secondary-foreground"
+                      >
+                        {path.icon}
+                      </Button>
+                    </StyledWrapper>
                   </TooltipTrigger>
                   <TooltipContent>
                     <span>{path.name}</span>
@@ -103,12 +106,25 @@ const DesktopNav = () => {
                 </Tooltip>
               </Link>
             ))}
-            {/*<UserButton />*/}
           </div>
         </Card>
       </div>
     </>
   );
 };
+
+const StyledWrapper = styled.div`
+  Button {
+    background: none;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  Button:hover {
+    background: rgba(170, 170, 170, 0.062);
+    transition: 0.5s;
+  }
+`;
 
 export default DesktopNav;
