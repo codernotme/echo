@@ -83,7 +83,6 @@ export const createComment = mutation({
       postId,            // Post ID
       userId: currentUser._id,   // Current user ID
       content,            // Comment content
-      commentsCount: 0,   // Initial comments count
     };
 
     // Insert the new comment into the "comments" collection
