@@ -71,7 +71,7 @@ export default function RootLayout({
           />
         </head>
         <body
-          className={`${poppins.className} flex flex-col w-full min-h-screen no-scrollbar container12`}
+          className={`${poppins.className} flex flex-col w-full min-h-screen no-scrollbar `}
           // Apply Poppins font, flexbox layout, padding, gap, and custom styling
         >
           <ThemeProvider
